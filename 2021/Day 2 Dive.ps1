@@ -17,20 +17,19 @@ After following these instructions, you would have a horizontal position of 15 a
     up X decreases the depth by X units.
 #>
 
-$folder = "C:\Users\Martin\OneDrive\Informatik\AdventOfCode\2021\"
 $file = "input2"
 
-$instructions = Get-Content(Get-ChildItem ($folder + $file))
+$instructions = Get-Content(Get-ChildItem ($file))
 $horizontal = $depth = 0
 
-# foreach ($instruction in $instructions) {
-#     $val = $instruction -split " "
-#     if ( $val[0] -eq "forward" ) { $horizontal += $val[1] }
-#     elseif ( $val[0] -eq "down" ) { $depth += $val[1] }
-#     elseif ($val[0] -eq "up" ) { $depth -= $val[1] }
-#     else { Write-Output "error in instruction $instruction" }
-# }
-# write ($horizontal * $depth)
+foreach ($instruction in $instructions) {
+    $val = $instruction -split " "
+    if ( $val[0] -eq "forward" ) { $horizontal += $val[1] }
+    elseif ( $val[0] -eq "down" ) { $depth += $val[1] }
+    elseif ($val[0] -eq "up" ) { $depth -= $val[1] }
+    else { Write-Output "error in instruction $instruction" }
+}
+Write-Warning ($horizontal * $depth)
 
 <#In addition to horizontal position and depth, you'll also need to track a third value, aim, which also starts at 0. The commands also mean something entirely different than you first thought:
 
@@ -54,7 +53,7 @@ Now, the above example does something different:
 After following these new instructions, you would have a horizontal position of 15 and a depth of 60. (Multiplying these produces 900.)
 #>
 
-$aim = 0
+$horizontal = $depth = $aim = 0
 
 foreach ($instruction in $instructions) {
     $val = $instruction -split " "
@@ -63,4 +62,4 @@ foreach ($instruction in $instructions) {
     elseif ($val[0] -eq "up" ) { $aim -= $val[1] }
     else { Write-Output "error in instruction $instruction" }
 }
-write ($horizontal * $depth)
+Write-Warning ($horizontal * $depth)

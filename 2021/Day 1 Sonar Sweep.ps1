@@ -15,16 +15,15 @@ There is no measurement before the first measurement. In the example above, the 
 263 (increased) 
 #>
 
-$folder = "C:\Users\Martin\OneDrive\Informatik\AdventOfCode\2021\"
 $file = "input1"
 
-$measurements = Get-Content(Get-ChildItem ($folder + $file)) | foreach { [int]$_ }
+$measurements = Get-Content(Get-ChildItem ($file)) | foreach { [int]$_ }
 
-# $increased = 0
-# foreach ($index in (0..($measurements.Length - 2))) {
-#     $increased += ($measurements[$index + 1] -gt $measurements[$index] )
-# }
-# write $increased
+$increased = 0
+foreach ($index in (0..($measurements.Length - 2))) {
+    $increased += ($measurements[$index + 1] -gt $measurements[$index] )
+}
+Write-Warning $increased
 
 <#
 Considering every single measurement isn't as useful as you expected: there's just too much noise in the data.
@@ -50,7 +49,7 @@ foreach ($index in (0..($measurements.Count - 3))) {
     $sliding_window[$index] = $measurements[$index] + $measurements[$index + 1] + $measurements[$index + 2] 
 }
 $increased = 0
-foreach ($index in (0..($sliding_window.Length - 2))) {
-    $increased += ($sliding_window[$index + 1] -gt $sliding_window[$index] )
+foreach ($index in (0..($measurements.Length - 4))) {
+    $increased += ($measurements[$index + 3] -gt $measurements[$index] )
 }
-write $increased
+Write-Warning $increased

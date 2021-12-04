@@ -17,7 +17,7 @@ After following these instructions, you would have a horizontal position of 15 a
     up X decreases the depth by X units.
 #>
 
-$file = "input2"
+$file = $PSScriptRoot + "/input2"
 
 $instructions = Get-Content(Get-ChildItem ($file))
 $horizontal = $depth = 0

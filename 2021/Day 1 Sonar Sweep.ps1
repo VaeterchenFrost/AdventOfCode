@@ -15,7 +15,7 @@ There is no measurement before the first measurement. In the example above, the 
 263 (increased) 
 #>
 
-$file = "input1"
+$file = $PSScriptRoot + "/input1"
 
 $measurements = Get-Content(Get-ChildItem ($file)) | foreach { [int]$_ }
 

@@ -12,6 +12,13 @@ function borderToInt ($instring) {
     | reduce { $a + $b }
 }
 
+function reverse ($inarray) {
+    if ($inarray.GetType().Name -eq "String") {
+        return ($inarray[-1.. - $inarray.length] -join '')
+    }
+    return $inarray[-1.. - $inarray.length]
+}
+
 $file = $PSScriptRoot + "/input20"
 $tilesize = 10 # manual
 $parsed = @{}
@@ -20,19 +27,20 @@ $it = [System.IO.File]::ReadLines($file)
 while ($it.MoveNext()) {
     $line = $it.Current
     if ($line -match "T") {
+        write $line
         #found tile
         $it.MoveNext()
-        $top = borderToInt($it.Current)
+        $top = $it.Current
         $lefts = $it.Current[0]
         $rights = $it.Current[-1]
         (2..$tilesize) | % { $it.MoveNext() # down to bottom
             $lefts += $it.Current[0]
             $rights += $it.Current[-1]
         }
-        $bottom = borderToInt($it.Current)
-        $left_side = borderToInt($lefts)
-        $right_side = borderToInt($rights)
-        $parsed[$line] = @($right_side, $top, $left_side, $bottom)
+        $bottom = $it.Current
+        # first 4 are one direction around, the later 4 direction reversed:
+        $parsed[$line] = @($rights, $top, (reverse $lefts), (reverse $bottom), (reverse $rights), (reverse $top), $lefts, $bottom)
+        break;
     }
 }
 

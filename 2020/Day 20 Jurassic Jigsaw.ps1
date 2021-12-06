@@ -6,10 +6,19 @@ To show how the tiles should be reassembled, each tile's image data includes a b
 All tiles have this border, and the border lines up exactly when the tiles are both oriented correctly. 
 Tiles at the edge of the image also have this border, but the outermost edges won't line up with any other tiles.
 #>
+Import-Module functional
+
 function borderToInt ($instring) {
     ($instring | Select-String "#" -AllMatches).Matches.Index  
     | ForEach-Object { [math]::Pow(2, $_) } 
-    | reduce { $a + $b }
+    | reduce { Param($a, $b) $a + $b }
+}
+
+function reverse ($inarray) {
+    if ($inarray.GetType().Name -eq "String") {
+        return ($inarray[-1.. - $inarray.length] -join '')
+    }
+    return $inarray[-1.. - $inarray.length]
 }
 
 function reverse ($inarray) {
@@ -29,18 +38,20 @@ while ($it.MoveNext()) {
     if ($line -match "T") {
         write $line
         #found tile
-        $it.MoveNext()
+        [void]$it.MoveNext()
         $top = $it.Current
         $lefts = $it.Current[0]
         $rights = $it.Current[-1]
-        (2..$tilesize) | % { $it.MoveNext() # down to bottom
+        (2..$tilesize) | % { [void]$it.MoveNext() # down to bottom
             $lefts += $it.Current[0]
             $rights += $it.Current[-1]
         }
         $bottom = $it.Current
         # first 4 are one direction around, the later 4 direction reversed:
-        $parsed[$line] = @($rights, $top, (reverse $lefts), (reverse $bottom), (reverse $rights), (reverse $top), $lefts, $bottom)
-        break;
+        $parsed[$line] = ($rights, $top, (reverse $lefts), (reverse $bottom), (reverse $rights), (reverse $top), $lefts, $bottom) | % { borderToInt $_ }
     }
 }
 
+$parsed.Values | reduce { $a + $b } | group | sort Count | select Count, Name
+$tilecount = $parsed.Count
+$sidelength = [math]::Sqrt($tilecount)

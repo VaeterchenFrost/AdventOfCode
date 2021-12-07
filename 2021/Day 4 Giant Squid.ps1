@@ -23,26 +23,28 @@ foreach ($board in (1..$boardcount)) {
 }
 # $boards.Values | % { $_.count -eq 25 } | Test-All
 $rows = (1..$boardsize).ForEach({ --$_ * $boardsize })
-try {
-($boardsize..$draws.Count).ForEach({
-            # go through all rows and columns to check if one is contained in cúrrent draw
-            $draw = $draws[0..($_ - 1)]
-            foreach ($board in $boards.Values) {
-                foreach ($line in (1..$boardsize)) {
-                    if (
-($board[($boardsize * ($line - 1))..($boardsize * $line - 1)] | ForEach-Object { $draw -contains $_ } | Test-All) -or 
-($board[($rows | % { $_ + $line - 1 })] | ForEach-Object { $draw -contains $_ } | Test-All)
-                    ) {
+
+:calculation ($boardsize..$draws.Count).ForEach({
+        # go through all rows and columns to check if one is contained in cúrrent draw
+        $draw = $draws[0..($_ - 1)]
+        $boards_won = @()
+        foreach ($key in $boards.Keys) {
+            foreach ($line in (1..$boardsize)) {
+                if (
+($boards[$key][($boardsize * ($line - 1))..($boardsize * $line - 1)] | ForEach-Object { $draw -contains $_ } | Test-All) -or 
+($boards[$key][($rows | % { $_ + $line - 1 })] | ForEach-Object { $draw -contains $_ } | Test-All)
+                ) {
+                    $boards_won += ($key)
+                    if (($boards.Count - $boards_won.Count) -eq 0) {
                         # handle found board: sum of all unmarked numbers on that board; Then, multiply that sum by the number that was just called when the board won
-                        $sumunmarked = $board.Where({ $draw -notcontains $_ }) | reduce { $a + $b }
-                        Write-Warning "board $($board[0..($boardsize-1)]) has unmarked $sumunmarked after draw $($draw[-1])"
+                        $sumunmarked = $boards[$key].Where({ $draw -notcontains $_ }) | reduce { $a + $b }
+                        Write-Debug "board $key has unmarked $sumunmarked after draw $($draw[-1])"
                         Write-Warning ($sumunmarked * $draw[-1])
-                        throw "finished";
+                        break calculation
                     }
                 }
             }
-        })
-}
-catch {
-    write "Finished"
-}
+        }
+        $boards_won.ForEach({ $boards.Remove($_) })
+    })
+

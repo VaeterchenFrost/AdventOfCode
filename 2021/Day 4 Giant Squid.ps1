@@ -9,6 +9,9 @@ Then, multiply that sum by the number that was just called when the board won, 2
 
 To guarantee victory against the giant squid, figure out which board will win first. 
 What will your final score be if you choose that board?
+
+Part 2: (Commented #)
+Figure out which board will win last. Once it wins, what would its final score be?
 #>
 
 $file = $PSScriptRoot + "/input4"
@@ -47,4 +50,3 @@ $rows = (1..$boardsize).ForEach({ --$_ * $boardsize })
         }
         # $boards_won.ForEach({ $boards.Remove($_) })
     })
-

@@ -21,3 +21,20 @@ $boards = @{}
 foreach ($board in (1..$boardcount)) {
     $boards[$board] = (1..$bordsize).ForEach({ [regex]::Split($lines[$board * (1 + $boardsize) + $_], "\s+").ForEach({ [int]$_ }) })
 }
+$rows = (1..$bordsize).ForEach({ $_ * $boardsize - $_ })
+($boardsize..$draws.Count).ForEach({
+        # go through all rows and columns to check if one is contained in cúrrent draw
+        $draw = $draws[0..($_ - 1)]
+        foreach ($board in $boards) {
+            (1..$bordsize).ForEach({
+
+                    if (
+                ($board[($bordsize * $_)..($bordsize * ($_ + 1))] | ForEach-Object { $draw -contains $_ } | Test-All) -or 
+                ($board[#todo] | ForEach-Object { $draw -contains $_ } | Test-All)
+                    ) {
+                        # handle found board
+
+                    }
+                })
+        }
+    })

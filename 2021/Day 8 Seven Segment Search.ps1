@@ -85,3 +85,26 @@ Adding all of the output values in this larger example produces 61229.
 For each entry, determine all of the wire/segment connections and decode the four-digit output values. 
 What do you get if you add up all of the output values? #>
 
+$iterator = [System.IO.File]::ReadLines($file)
+[void]$iterator.MoveNext()
+$words = ($iterator.Current.Split('|')[0] | Select-String '(\w+)' -AllMatches).Matches.Value
+$counts = ($iterator.Current.Split('|')[0] | Select-String '(\w)' -AllMatches).Matches.Value | Group-Object | Select-Object Name, Count
+@{
+  $counts.Where({ $_.count -eq 9 }).name = 'f';
+  $counts.Where({ $_.count -eq 6 }).name = 'b';
+  $counts.Where({ $_.count -eq 4 }).name = 'e';
+  $counts.Where({ $_.count -eq 7 -and 
+    ($words.Where({ $_.length -eq 4 }) -match $_.Name) 
+    }).name = 'd';
+  $counts.Where({ $_.count -eq 7 -and
+      ($words.Where({ $_.length -eq 4 }) -notmatch $_.Name) 
+    }).name = 'g';
+  $counts.Where({ $_.count -eq 8 -and 
+      ($words.Where({ $_.length -eq 2 }) -match $_.Name) 
+    }).name = 'c';
+  $counts.Where({ $_.count -eq 8 -and
+      ($words.Where({ $_.length -eq 2 }) -notmatch $_.Name) 
+    }).name = 'a';
+
+}
+$iterator.dispose()

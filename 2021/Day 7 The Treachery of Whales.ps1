@@ -26,7 +26,8 @@ $numbers = [System.IO.File]::ReadAllText((Get-ChildItem $file)) -split ',' | For
 
 $positions = $numbers | Group-Object | Select-Object Name, Count 
 $positions.ForEach({ $_.name = [int]$_.Name }) # string per default
-$min = $numbers.Count # init with highest diff
+
+$min = [Int64]::MaxValue # init with highest diff
 # find position with lowest difference of larger<->smaller counts
 foreach ($position in $positions)
 {
@@ -43,3 +44,31 @@ foreach ($position in $positions)
     $min = $disorder
     $before = $position.Name
 }
+
+# Part 2
+function fuel2
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [Object[]]$positions,
+        [Parameter(Mandatory)]
+        [double]$point
+    )
+    ($positions.ForEach({ 
+            $distance = [Math]::Abs($_.Name - $point); 
+($distance * ++$distance) / 2 * $_.Count }) | Measure-Object -Sum).Sum    
+}
+# check around the balance point to see which integer fits best. 
+$optimal_point = ($numbers | Measure-Object -Average).Average
+$points = ([Math]::Floor($optimal_point), [Math]::Ceiling($optimal_point))
+$fuel = $points.ForEach({ fuel2 $positions $_ })
+if ($fuel[0] -lt $fuel[1])
+{
+    Write-Warning "Found lowest disorder to be in position $($points[0]) !"
+    Write-Warning $fuel[0]
+} else {
+    Write-Warning "Found lowest disorder to be in position $($points[1]) !"
+    Write-Warning $fuel[1]
+}
+

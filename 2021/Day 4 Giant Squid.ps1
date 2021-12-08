@@ -14,6 +14,7 @@ Part 2: (Commented #)
 Figure out which board will win last. Once it wins, what would its final score be?
 #>
 
+Import-Module functional
 $file = $PSScriptRoot + "/input4"
 $boardsize = 5
 $lines = Get-Content(Get-ChildItem ($file))

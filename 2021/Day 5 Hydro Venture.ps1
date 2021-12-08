@@ -11,7 +11,9 @@ Consider only horizontal and vertical lines. At how many points do at least two 
 $file = $PSScriptRoot + "/input5"
 $lines = Get-Content(Get-ChildItem ($file))
 
-$numbers = $lines | % { ( $_ | Select-String "(\d+)" -AllMatches).Matches.Value | % { [int]$_ } }
+$numbers = $lines.foreach(
+    { ($_ | Select-String "(\d+)" -AllMatches).Matches.Value | ForEach-Object { [int]$_ } }
+)
 $min, $max = $numbers | Sort-Object | Select-Object -First 1 -Last 1
 
 $field = New-Object 'int[,]' ($max + 1), ($max + 1)

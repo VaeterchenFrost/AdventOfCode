@@ -17,7 +17,7 @@ There is no measurement before the first measurement. In the example above, the 
 
 $file = $PSScriptRoot + "/input1"
 
-$measurements = Get-Content(Get-ChildItem ($file)) | foreach { [int]$_ }
+$measurements = Get-Content(Get-ChildItem ($file)) | ForEach-Object { [int]$_ }
 
 $increased = 0
 foreach ($index in (0..($measurements.Length - 2))) {

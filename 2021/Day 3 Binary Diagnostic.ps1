@@ -29,14 +29,14 @@ $instructions = Get-Content(Get-ChildItem ($file))
 $stringlength = $instructions[0].Length
 $c = [int[]]::new($stringlength)
 
-$instructions | foreach { $bits = $_ -split ""; 
+$instructions | ForEach-Object { $bits = $_ -split ""; 
     foreach ($index in (0..($c.Count - 1))) 
     { $c[$index] += [int]($bits[$index + 1]) } 
 }
-$c = $c | foreach { [int]($_ -gt $instructions.Count / 2) }
+$c = $c | ForEach-Object { [int]($_ -gt $instructions.Count / 2) }
 
 $gamma = [Convert]::ToInt32(($c -join ""), 2)
-$epsilon = [Convert]::ToInt32((($c | % { 1 - $_ }) -join ""), 2)
+$epsilon = [Convert]::ToInt32($c.foreach({ 1 - $_ }) -join "", 2)
 
 Write-Warning ($gamma * $epsilon)
 
@@ -53,8 +53,8 @@ The bit criteria depends on which type of rating value you want to find:
     To find CO2 scrubber rating, determine the least common value (0 or 1) in the current bit position, and keep only numbers with that bit in that position. If 0 and 1 are equally common, keep values with a 0 in the position being considered.
 Use the binary numbers in your diagnostic report to calculate the oxygen generator rating and CO2 scrubber rating, then multiply them together.
 #>
-$set1 = $instructions | where { $_[0] -eq "1" }
-$set0 = $instructions | where { $_[0] -eq "0" }
+$set1 = $instructions.Where({ $_[0] -eq "1" })
+$set0 = $instructions.Where({ $_[0] -eq "0" })
 if ($set1.count -ge $set0.count) {
     $oxygen_generator_rating = $set1
     $co2_scrubber_rating = $set0
@@ -67,18 +67,16 @@ else {
 foreach ($index in (1..($stringlength - 1))) {
     Write-Debug "$index index"
     if ($oxygen_generator_rating.count -gt 1) {
-        $group = $oxygen_generator_rating | group { $_[$index] -eq "1" }
-        $oxygen_generator_rating = ($group | sort Count | select -Last 1).Group
+        $group = $oxygen_generator_rating | Group-Object { $_[$index] -eq "1" }
+        $oxygen_generator_rating = ($group | Sort-Object Count | Select-Object -Last 1).Group
     }
     Write-Debug $oxygen_generator_rating.count
     if ($co2_scrubber_rating.count -gt 1) {
-        $group = $co2_scrubber_rating | group { $_[$index] -eq "1" }
-        $co2_scrubber_rating = ($group | sort Count | select -First 1).Group
+        $group = $co2_scrubber_rating | Group-Object { $_[$index] -eq "1" }
+        $co2_scrubber_rating = ($group | Sort-Object Count | Select-Object -First 1).Group
     }
     Write-Debug $co2_scrubber_rating.count
 }
-write $oxygen_generator_rating
-write $co2_scrubber_rating
-Write-Warning ([Convert]::ToInt32($oxygen_generator_rating, 2)*[Convert]::ToInt32($co2_scrubber_rating, 2))
-
-
+Write-Debug $oxygen_generator_rating
+Write-Debug $co2_scrubber_rating
+Write-Warning ([Convert]::ToInt32($oxygen_generator_rating, 2) * [Convert]::ToInt32($co2_scrubber_rating, 2))

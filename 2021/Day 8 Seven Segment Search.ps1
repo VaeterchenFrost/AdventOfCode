@@ -87,41 +87,42 @@ What do you get if you add up all of the output values? #>
 
 $letters = @{
   0 = 'a', 'b', 'c', 'e', 'f', 'g'; 
-  1 = 'c', 'f'; 
+  # 1 = 'c', 'f'; 
   2 = 'a', 'c', 'd', 'e', 'g'; 
   3 = 'a', 'c', 'd', 'f', 'g'; 
-  4 = 'b', 'c', 'd', 'f'; 
+  # 4 = 'b', 'c', 'd', 'f'; 
   5 = 'a', 'b', 'd', 'f', 'g'; 
   6 = 'a', 'b', 'd', 'e', 'f', 'g'; 
-  7 = 'a', 'c', 'f';
-  8 = 'a', 'b', 'c', 'd', 'e', 'f', 'g'; 
+  # 7 = 'a', 'c', 'f';
+  # 8 = 'a', 'b', 'c', 'd', 'e', 'f', 'g'; 
   9 = 'a', 'b', 'c', 'd', 'f', 'g' 
 }
 $iterator = [System.IO.File]::ReadLines($file)
 $result = 0
-foreach ($line  in $iterator)
+foreach ($line in $iterator)
 {
   $leftpart, $rightpart = $line.Split('|')
   $words = ($leftpart | Select-String '(\w+)' -AllMatches).Matches.Value
   $counts = ($leftpart | Select-String '(\w)' -AllMatches).Matches.Value | Group-Object | Select-Object Name, Count
   $outputvalues = ($rightpart | Select-String '(\w+)' -AllMatches).Matches.Value
   $wiring = @{
-    $counts.Where({ $_.count -eq 9 }).name = 'f';
+    $counts.Where({ $_.count -eq 8 -and
+      ($words.Where({ $_.length -eq 2 }) -notmatch $_.Name) 
+      }).name = 'a'; 
     $counts.Where({ $_.count -eq 6 }).name = 'b';
-    $counts.Where({ $_.count -eq 4 }).name = 'e';
-    $counts.Where({ $_.count -eq 7 -and 
-    ($words.Where({ $_.length -eq 4 }) -match $_.Name) 
-      }).name = 'd';
-    $counts.Where({ $_.count -eq 7 -and
-      ($words.Where({ $_.length -eq 4 }) -notmatch $_.Name) 
-      }).name = 'g';
     $counts.Where({ $_.count -eq 8 -and 
       ($words.Where({ $_.length -eq 2 }) -match $_.Name) 
       }).name = 'c';
-    $counts.Where({ $_.count -eq 8 -and
-      ($words.Where({ $_.length -eq 2 }) -notmatch $_.Name) 
-      }).name = 'a';  
+    $counts.Where({ $_.count -eq 7 -and 
+    ($words.Where({ $_.length -eq 4 }) -match $_.Name) 
+      }).name = 'd';
+    $counts.Where({ $_.count -eq 4 }).name = 'e';
+    $counts.Where({ $_.count -eq 9 }).name = 'f';
+    $counts.Where({ $_.count -eq 7 -and
+      ($words.Where({ $_.length -eq 4 }) -notmatch $_.Name) 
+      }).name = 'g';
   }
+
   $lineresult = ''
   foreach ($string in $outputvalues) # can also check the length of strings and shortcut the bigger selection
   {
@@ -131,9 +132,9 @@ foreach ($line  in $iterator)
     elseif ($string.Length -eq 7) { $lineresult += 8 }
     else
     {
-      $segment = (($string -split '')[1..$string.Length].ForEach({ $wiring[$_] }))
+      $segment = ($string -split '')[1..$string.Length].ForEach({ $wiring[$_] })
       Write-Debug ($segment -join '')
-      $lineresult += ($letters.keys.Where({ -not (Compare-Object $segment $letters[$_] ) }) )
+      $lineresult += $letters.keys.Where({ -not (Compare-Object $segment $letters[$_]) })
     }
   } 
   $result += [int]$lineresult

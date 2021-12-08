@@ -98,29 +98,34 @@ $letters = @{
   9 = 'a', 'b', 'c', 'd', 'f', 'g' 
 }
 $iterator = [System.IO.File]::ReadLines($file)
-[void]$iterator.MoveNext()
-$words = ($iterator.Current.Split('|')[0] | Select-String '(\w+)' -AllMatches).Matches.Value
-$counts = ($iterator.Current.Split('|')[0] | Select-String '(\w)' -AllMatches).Matches.Value | Group-Object | Select-Object Name, Count
-$wiring = @{
-  $counts.Where({ $_.count -eq 9 }).name = 'f';
-  $counts.Where({ $_.count -eq 6 }).name = 'b';
-  $counts.Where({ $_.count -eq 4 }).name = 'e';
-  $counts.Where({ $_.count -eq 7 -and 
-    ($words.Where({ $_.length -eq 4 }) -match $_.Name) 
-    }).name = 'd';
-  $counts.Where({ $_.count -eq 7 -and
-      ($words.Where({ $_.length -eq 4 }) -notmatch $_.Name) 
-    }).name = 'g';
-  $counts.Where({ $_.count -eq 8 -and 
-      ($words.Where({ $_.length -eq 2 }) -match $_.Name) 
-    }).name = 'c';
-  $counts.Where({ $_.count -eq 8 -and
-      ($words.Where({ $_.length -eq 2 }) -notmatch $_.Name) 
-    }).name = 'a';  
-}
-$outputvalues = ($iterator.Current.Split('|')[1] | Select-String '(\w+)' -AllMatches).Matches.Value
-foreach ($string in $outputvalues)
+$result = 0
+foreach ($line  in $iterator)
 {
-  Write-Output ($letters.keys.Where({ -not (Compare-Object (($string -split '')[1..$string.Length].ForEach({ $wiring[$_] })) $letters[$_] ) }) )
-} 
-$iterator.dispose()
+  $leftpart, $rightpart = $line.Split('|')
+  $words = ($leftpart | Select-String '(\w+)' -AllMatches).Matches.Value
+  $counts = ($leftpart | Select-String '(\w)' -AllMatches).Matches.Value | Group-Object | Select-Object Name, Count
+  $outputvalues = ($rightpart | Select-String '(\w+)' -AllMatches).Matches.Value
+  $wiring = @{
+    $counts.Where({ $_.count -eq 9 }).name = 'f';
+    $counts.Where({ $_.count -eq 6 }).name = 'b';
+    $counts.Where({ $_.count -eq 4 }).name = 'e';
+    $counts.Where({ $_.count -eq 7 -and 
+    ($words.Where({ $_.length -eq 4 }) -match $_.Name) 
+      }).name = 'd';
+    $counts.Where({ $_.count -eq 7 -and
+      ($words.Where({ $_.length -eq 4 }) -notmatch $_.Name) 
+      }).name = 'g';
+    $counts.Where({ $_.count -eq 8 -and 
+      ($words.Where({ $_.length -eq 2 }) -match $_.Name) 
+      }).name = 'c';
+    $counts.Where({ $_.count -eq 8 -and
+      ($words.Where({ $_.length -eq 2 }) -notmatch $_.Name) 
+      }).name = 'a';  
+  }
+  $lineresult = ''
+  foreach ($string in $outputvalues)
+  {
+    $lineresult += ($letters.keys.Where({ -not (Compare-Object (($string -split '')[1..$string.Length].ForEach({ $wiring[$_] })) $letters[$_] ) }) )
+  } 
+  $result += [int]$lineresult
+}

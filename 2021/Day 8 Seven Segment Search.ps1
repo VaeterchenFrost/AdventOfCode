@@ -85,11 +85,23 @@ Adding all of the output values in this larger example produces 61229.
 For each entry, determine all of the wire/segment connections and decode the four-digit output values. 
 What do you get if you add up all of the output values? #>
 
+$letters = @{
+  0 = 'a', 'b', 'c', 'e', 'f', 'g'; 
+  1 = 'c', 'f'; 
+  2 = 'a', 'c', 'd', 'e', 'g'; 
+  3 = 'a', 'c', 'd', 'f', 'g'; 
+  4 = 'b', 'c', 'd', 'f'; 
+  5 = 'a', 'b', 'd', 'f', 'g'; 
+  6 = 'a', 'b', 'd', 'e', 'f', 'g'; 
+  7 = 'a', 'c', 'f';
+  8 = 'a', 'b', 'c', 'd', 'e', 'f', 'g'; 
+  9 = 'a', 'b', 'c', 'd', 'f', 'g' 
+}
 $iterator = [System.IO.File]::ReadLines($file)
 [void]$iterator.MoveNext()
 $words = ($iterator.Current.Split('|')[0] | Select-String '(\w+)' -AllMatches).Matches.Value
 $counts = ($iterator.Current.Split('|')[0] | Select-String '(\w)' -AllMatches).Matches.Value | Group-Object | Select-Object Name, Count
-@{
+$wiring = @{
   $counts.Where({ $_.count -eq 9 }).name = 'f';
   $counts.Where({ $_.count -eq 6 }).name = 'b';
   $counts.Where({ $_.count -eq 4 }).name = 'e';
@@ -104,7 +116,11 @@ $counts = ($iterator.Current.Split('|')[0] | Select-String '(\w)' -AllMatches).M
     }).name = 'c';
   $counts.Where({ $_.count -eq 8 -and
       ($words.Where({ $_.length -eq 2 }) -notmatch $_.Name) 
-    }).name = 'a';
-
+    }).name = 'a';  
 }
+$outputvalues = ($iterator.Current.Split('|')[1] | Select-String '(\w+)' -AllMatches).Matches.Value
+foreach ($string in $outputvalues)
+{
+  Write-Output ($letters.keys.Where({ -not (Compare-Object (($string -split '')[1..$string.Length].ForEach({ $wiring[$_] })) $letters[$_] ) }) )
+} 
 $iterator.dispose()

@@ -123,9 +123,20 @@ foreach ($line  in $iterator)
       }).name = 'a';  
   }
   $lineresult = ''
-  foreach ($string in $outputvalues)
+  foreach ($string in $outputvalues) # can also check the length of strings and shortcut the bigger selection
   {
-    $lineresult += ($letters.keys.Where({ -not (Compare-Object (($string -split '')[1..$string.Length].ForEach({ $wiring[$_] })) $letters[$_] ) }) )
+    if ($string.Length -eq 2) { $lineresult += 1 }
+    elseif ($string.Length -eq 3) { $lineresult += 7 }
+    elseif ($string.Length -eq 4) { $lineresult += 4 }
+    elseif ($string.Length -eq 7) { $lineresult += 8 }
+    else
+    {
+      $segment = (($string -split '')[1..$string.Length].ForEach({ $wiring[$_] }))
+      Write-Debug ($segment -join '')
+      $lineresult += ($letters.keys.Where({ -not (Compare-Object $segment $letters[$_] ) }) )
+    }
   } 
   $result += [int]$lineresult
+  Write-Debug "Result of $outputvalues : $lineresult"
 }
+Write-Warning $result

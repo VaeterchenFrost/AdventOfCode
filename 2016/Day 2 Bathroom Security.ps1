@@ -28,17 +28,25 @@ $file = $PSScriptRoot + "/input2"
 $directions = (Get-Content(Get-ChildItem ($file))) 
 
 $x = $y = 0
+$x = -2
+$bathroom_keypad_design = @{
+    '0-2' = '1';
+    '-1-1' = '2'; '0-1' = '3'; '1-1' = '4';
+    '-20' = '5'; '-10' = '6'; '00' = '7'; '10' = '8'; '20' = '9';
+    '-11' = 'A'; '01' = 'B'; '11' = 'C';
+    '02' = 'D'
+}
 $code = ''
 $directions.ForEach({
         foreach ($instruction in ($_.ToCharArray())) {
-            Write-Host $instruction
             switch ($instruction) {
-                'D' { $y = [Math]::Min($y + 1, 1) }
-                'U' { $y = [Math]::Max($y - 1, -1) }
-                'L' { $x = [Math]::Max($x - 1, -1) }
-                'R' { $x = [Math]::Min($x + 1, 1) }
+                'D' { $y = [Math]::Min($y + 1, 2 - [math]::abs($x)) } 
+                'U' { $y = [Math]::Max($y - 1, [math]::abs($x) - 2) }
+                'L' { $x = [Math]::Max($x - 1, [math]::abs($y) - 2) }
+                'R' { $x = [Math]::Min($x + 1, 2 - [math]::abs($x)) }
             }
         }
-        $code += $y * 3 + $x + 5 
+        Write-Debug ('' + $x + $y)
+        $code += $bathroom_keypad_design['' + $x + $y]
     })
 Write-Warning $code

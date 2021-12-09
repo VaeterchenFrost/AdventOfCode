@@ -2,6 +2,7 @@
 The design document gives the side lengths of each triangle it describes, but... 5 10 25? Some of these aren't triangles. You can't help but mark the impossible ones.
 In a valid triangle, the sum of any two sides must be larger than the remaining side. For example, the "triangle" given above is impossible, because 5 + 10 is not larger than 25.
 In your puzzle input, how many of the listed triangles are possible?#>
+Import-Module functional
 
 $file = $PSScriptRoot + "/input3"
 $lines = (Get-Content(Get-ChildItem ($file))) 
@@ -34,9 +35,8 @@ foreach ($line in $lines) {
     $l2 = findnumbers $foreach.current
     [void]$foreach.movenext()
     $l3 = findnumbers $foreach.current
-    $qvalid = (0..($l1.Count - 1)).ForEach({
+    $valid += (0..($l1.Count - 1)).ForEach({
         (($l1[$_], $l2[$_], $l3[$_]) | Sort-Object -Descending | reduce { $a - $b }) -lt 0
-        }) | Measure-Object -Sum 
-    $valid += $qvalid.Sum
+        }) | Measure-Object -Sum | ForEach-Object { $_.sum }
 }
 Write-Warning $valid

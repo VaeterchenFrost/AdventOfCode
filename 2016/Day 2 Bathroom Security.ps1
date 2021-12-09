@@ -43,7 +43,7 @@ $directions.ForEach({
                 'D' { $y = [Math]::Min($y + 1, 2 - [math]::abs($x)) } 
                 'U' { $y = [Math]::Max($y - 1, [math]::abs($x) - 2) }
                 'L' { $x = [Math]::Max($x - 1, [math]::abs($y) - 2) }
-                'R' { $x = [Math]::Min($x + 1, 2 - [math]::abs($x)) }
+                'R' { $x = [Math]::Min($x + 1, 2 - [math]::abs($y)) }
             }
         }
         Write-Debug ('' + $x + $y)

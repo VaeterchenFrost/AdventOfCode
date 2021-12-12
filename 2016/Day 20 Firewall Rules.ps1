@@ -1,7 +1,8 @@
 <#--- Day 20: Firewall Rules ---
 
 You'd like to set up a small hidden computer here so you can use it to get back into the network later. However, the corporate firewall only allows communication with certain external IP addresses.
-You've retrieved the list of blocked IPs from the firewall, but the list seems to be messy and poorly maintained, and it's not clear which IPs are allowed. Also, rather than being written in dot-decimal notation, they are written as plain 32-bit integers, which can have any value from 0 through 4294967295, inclusive.
+You've retrieved the list of blocked IPs from the firewall, but the list seems to be messy and poorly maintained, and it's not clear which IPs are allowed. 
+Also, rather than being written in dot-decimal notation, they are written as plain 32-bit integers, which can have any value from 0 through 4294967295, inclusive.
 For example, suppose only the values 0 through 9 were valid, and that you retrieved the following blacklist:
 
 5-8
@@ -16,7 +17,7 @@ $file = $PSScriptRoot + '/input20'
 $iterator = [System.IO.File]::ReadLines($file)
 
 $list = $iterator.ForEach({
-        $range = $_.split('-').ForEach({ [Int64]$_ })
+        $range = $_.split('-').ForEach({ [UInt32]$_ })
         [tuple]::Create($range)
     }) | Sort-Object -Property @{Expression = { $_[0][0] } }
 
@@ -28,4 +29,14 @@ while ($candidate) {
     $candidate = $set | Sort-Object -Property @{Expression = { $_[0][1] } } -Descending -Top 1
 }
 Write-Warning ($max + 1)
+
+<#--- Part Two ---
+
+How many IPs are allowed by the blacklist?
+#>
+$allowed = 0
+$candidate = $list[0]
+$allowed += $candidate.Item1[0] - [UInt32]::MaxValue
+
+
 

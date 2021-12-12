@@ -23,46 +23,48 @@ $to_flash = [System.Collections.Stack]::new()
 (1..$lines.Count).ForEach({ $energy_levels[$_] = (, 0) + ($lines[$_ - 1] | Select-String '\d' -AllMatches).Matches.Value + (, 0) | ForEach-Object { [int]$_ } })
 $energy_levels[0] = $energy_levels[-1] = (, 0) * ($energy_levels[1].Count)
 $columns = (1..($energy_levels[$line].count - 2))
-# $octopusses = $energy_levels | ForEach-Object { $_.count } | reduce { $a + $b }
+$octopusses = 100
 $flashes = 0
-[void](1..100).ForEach({
-    $energy_levels | ForEach-Object { $_ -join '' } | Write-Debug
-    # First, the energy level of each octopus increases by 1.
-    foreach ($line in (1..$lines.Count)) {
-      foreach ($column in $columns) {
-        $energy_levels[$line][$column] += 1
+$step = 0
+do {
+  $step++
+  $energy_levels | ForEach-Object { $_ -join '' } | Write-Debug
+  # First, the energy level of each octopus increases by 1.
+  foreach ($line in (1..$lines.Count)) {
+    foreach ($column in $columns) {
+      $energy_levels[$line][$column] += 1
+    }
+  }
+  # Collect Flashes
+  $to_flash.Clear()
+  $flashed.Clear()
+  foreach ($line in (1..$lines.Count)) {
+    foreach ($column in $columns) {
+      if ($energy_levels[$line][$column] -gt 9) {
+        $tuple = [System.Tuple]::Create($line, $column)
+        $to_flash.Push($tuple)
+        [void]$flashed.Add($tuple)
       }
     }
-    # Collect Flashes
-    $to_flash.Clear()
-    $flashed.Clear()
-    foreach ($line in (1..$lines.Count)) {
-      foreach ($column in $columns) {
-        if ($energy_levels[$line][$column] -gt 9) {
-          $tuple = [System.Tuple]::Create($line, $column)
-          $to_flash.Push($tuple)
-          $flashed.Add($tuple)
-        }
-      }
-    }
-    # Flashes
-    while ($to_flash.Count) {
-      $flash = $to_flash.Pop()
-      # Flash
+  }
+  # Flashes
+  while ($to_flash.Count) {
+    $flash = $to_flash.Pop()
+    # Flash
       ((-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)).ForEach({
-          $tuple = [System.Tuple]::Create($flash[0] + $_[0], $flash[1] + $_[1])
-          if ($energy_levels[$tuple[0]][$tuple[1]]) {
-            $energy_levels[$tuple[0]][$tuple[1]] += 1
-            if ($energy_levels[$tuple[0]][$tuple[1]] -gt 9 -and $flashed.Add($tuple)) {
-              $to_flash.Push($tuple)
-            }
+        $tuple = [System.Tuple]::Create($flash[0] + $_[0], $flash[1] + $_[1])
+        if ($energy_levels[$tuple[0]][$tuple[1]]) {
+          $energy_levels[$tuple[0]][$tuple[1]] += 1
+          if ($energy_levels[$tuple[0]][$tuple[1]] -gt 9 -and $flashed.Add($tuple)) {
+            $to_flash.Push($tuple)
           }
-        })
-    }
-    # Finally, any octopus that flashed during this step has its energy level set to 0, as it used all of its energy to flash.
-    $flashed.ForEach({ $energy_levels[$_[0]][$_[1]] = 0 })
-    $flashes += $flashed.Count
-    Write-Debug ($flashed | ForEach-Object { "$($_.Item1),$($_.Item2)" } | Join-String -Separator ' ')
-  })
+        }
+      })
+  }
+  # Finally, any octopus that flashed during this step has its energy level set to 0, as it used all of its energy to flash.
+  $flashed.ForEach({ $energy_levels[$_[0]][$_[1]] = 0 })
+  $flashes += $flashed.Count
+  Write-Debug ($flashed | ForEach-Object { "$($_.Item1),$($_.Item2)" } | Join-String -Separator ' ')
+} until ($flashed.Count -eq $octopusses)
 
-Write-Warning $flashes
+Write-Warning $step

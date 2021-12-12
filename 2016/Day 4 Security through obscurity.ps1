@@ -22,7 +22,7 @@ What is the sector ID of the room where North Pole objects are stored?#>
 
 $file = $PSScriptRoot + '/input4'
 $iterator = [System.IO.File]::ReadLines($file)
-# $sum = 0
+$sum = 0
 function rotate ($char, $num) {
     return [char]((([int]$char - 97 + $num) % 26) + 97)
 }
@@ -38,8 +38,8 @@ $iterator.ForEach({
             if ($room -match 'northpole') {
                 Write-Warning "$room at $id"
             }
-            # $sum += [int]$id
+            $sum += [int]$id
         }  
     })
-# Write-Warning $sum
+Write-Warning $sum
 

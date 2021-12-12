@@ -12,18 +12,18 @@ You can model the energy levels and flashes of light in steps. During a single s
     - Finally, any octopus that flashed during this step has its energy level set to 0, as it used all of its energy to flash.
 
 Given the starting energy levels of the dumbo octopuses in your cavern, simulate 100 steps. How many total flashes are there after 100 steps?#>
-Import-Module functional
 
 $file = $PSScriptRoot + '/input11'
 $lines = Get-Content(Get-ChildItem ($file))
+$columns = 1..10 # expected
 $energy_levels = [int[][]]::new($lines.Count + 2)
 $flashed = New-Object 'System.Collections.Generic.HashSet[Tuple[int,int]]'
 $to_flash = [System.Collections.Stack]::new() 
 
 (1..$lines.Count).ForEach({ $energy_levels[$_] = (, 0) + ($lines[$_ - 1] | Select-String '\d' -AllMatches).Matches.Value + (, 0) | ForEach-Object { [int]$_ } })
-$energy_levels[0] = $energy_levels[-1] = (, 0) * ($energy_levels[1].Count)
-$columns = (1..($energy_levels[$line].count - 2))
-$octopusses = 100
+
+$energy_levels[0] = $energy_levels[-1] = (, 0) * ($columns.Count + 2)
+$octopusses = $lines.Count * $columns.Count
 $flashes = 0
 $step = 0
 do {
@@ -50,10 +50,9 @@ do {
   # Flashes
   while ($to_flash.Count) {
     $flash = $to_flash.Pop()
-    # Flash
       ((-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)).ForEach({
         $tuple = [System.Tuple]::Create($flash[0] + $_[0], $flash[1] + $_[1])
-        if ($energy_levels[$tuple[0]][$tuple[1]]) {
+        if ($energy_levels[$tuple[0]][$tuple[1]]) {  # not a border
           $energy_levels[$tuple[0]][$tuple[1]] += 1
           if ($energy_levels[$tuple[0]][$tuple[1]] -gt 9 -and $flashed.Add($tuple)) {
             $to_flash.Push($tuple)
@@ -65,6 +64,7 @@ do {
   $flashed.ForEach({ $energy_levels[$_[0]][$_[1]] = 0 })
   $flashes += $flashed.Count
   Write-Debug ($flashed | ForEach-Object { "$($_.Item1),$($_.Item2)" } | Join-String -Separator ' ')
+  if ($step -eq 100) { Write-Warning "$flashes after 100 steps" }
 } until ($flashed.Count -eq $octopusses)
 
 Write-Warning $step

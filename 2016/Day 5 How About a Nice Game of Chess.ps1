@@ -14,22 +14,35 @@ In this example, after continuing this search a total of eight times, the passwo
 Given the actual Door ID, what is the password?
 Your puzzle input is ffykfhsq.#>
 
-# Duration ~ 3.7 seconds
+# Part 1 duration ~ 3.7 seconds
+# Part 2 duration ~ 16 seconds
+$expected_length = 8
 $doorid = 'ffykfhsq'
-$password = ''
+$positions = [string[]]::new($expected_length)
+$found = 0
 $integer = 0
 
 $md5 = [System.Security.Cryptography.MD5]::Create()
 
-while ($password.Length -lt 8) {
+while ($found -lt $expected_length) {
     $string = $doorid + $integer++
     $bytes = $md5.ComputeHash([System.Text.Encoding]::UTF8.GetBytes($string))
     # $hash = $bytes | ForEach-Object { $_.ToString('x2') } | Join-String -Separator ''
     # if (-not ($integer % 100000)) { Write-Debug $integer }
-    if ($bytes[0] -eq 0 -and $bytes[1] -eq 0 -and $bytes[2] -lt 16) {
-        $password += $bytes[2].tostring('x')
-        Write-Debug "Found hash at $integer"
-        Write-Debug "Password is now $password"
+    if ($bytes[0] -eq 0 -and $bytes[1] -eq 0 -and $bytes[2] -lt 8 -and -not $positions[$bytes[2]]) {
+        $positions[$bytes[2]] += $bytes[3].tostring('x').Substring(0, 1)
+        $found++
+        Write-Debug "Part 2 found $found at $integer"
     }
 }
-Write-Warning $password
+Write-Warning "$($positions -join '')"
+
+<#--- Part Two ---
+
+As the door slides open, you are presented with a second door that uses a slightly more inspired security mechanism. Clearly unimpressed by the last version (in what movie is the password decrypted in order?!), the Easter Bunny engineers have worked out a better solution.
+
+Instead of simply filling in the password from left to right, the hash now also indicates the position within the password to fill. 
+You still look for hashes that begin with five zeroes; however, now, the sixth character represents the position (0-7), and the seventh character is the character to put in that position.
+
+A hash result of 000001f means that f is the second character in the password. 
+Use only the first result for each position, and ignore invalid positions.#>

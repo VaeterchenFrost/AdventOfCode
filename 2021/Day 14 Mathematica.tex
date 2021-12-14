@@ -1,0 +1,203 @@
+%% AMS-LaTeX Created with the Wolfram Language : www.wolfram.com
+
+\documentclass{article}
+\usepackage{amsmath, amssymb, graphics, setspace}
+
+\newcommand{\mathsym}[1]{{}}
+\newcommand{\unicode}[1]{{}}
+
+\newcounter{mathematicapage}
+\begin{document}
+
+\title{Advent of Code 2021 - Day 14: Extended Polymerization}
+\author{}
+\date{}
+\maketitle
+
+\section*{Parsing}
+
+\begin{doublespace}
+\noindent\(\pmb{\text{input}=\text{$\texttt{"}$NNCB}}\\
+\pmb{}\\
+\pmb{\text{CH$\to $B
+}}\\
+\pmb{\text{HH$\to $N
+}}\\
+\pmb{\text{CB$\to $H
+}}\\
+\pmb{\text{NH$\to $C
+}}\\
+\pmb{\text{HB$\to $C
+}}\\
+\pmb{\text{HC$\to $B
+}}\\
+\pmb{\text{HN$\to $C
+}}\\
+\pmb{\text{NN$\to $C
+}}\\
+\pmb{\text{BH$\to $H
+}}\\
+\pmb{\text{NC$\to $B
+}}\\
+\pmb{\text{NB$\to $B
+}}\\
+\pmb{\text{BN$\to $B
+}}\\
+\pmb{\text{BB$\to $N
+}}\\
+\pmb{\text{BC$\to $B
+}}\\
+\pmb{\text{CC$\to $N
+}}\\
+\pmb{\text{CN$\to $C$\texttt{"}$};}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\pmb{\text{lines}=\text{StringSplit}[\text{input},\text{{``}$\backslash $n{''}}]}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\{\text{NNCB},\text{},\text{CH$\to $B},\text{HH$\to $N},\text{CB$\to $H},\text{NH$\to $C},\text{HB$\to $C},\text{HC$\to $B},\text{HN$\to
+$C},\text{NN$\to $C},\text{BH$\to $H},\text{NC$\to $B},\text{NB$\to $B},\text{BN$\to $B},\text{BB$\to $N},\text{BC$\to $B},\text{CC$\to $N},\text{CN$\to
+$C}\}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\pmb{\text{polymertemplate}=\text{Characters}@\text{lines}[[1]]}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\{\text{N},\text{N},\text{C},\text{B}\}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\pmb{\text{stringrules}=\text{lines}[[3\text{;;}]]}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\{\text{CH$\to $B},\text{HH$\to $N},\text{CB$\to $H},\text{NH$\to $C},\text{HB$\to $C},\text{HC$\to $B},\text{HN$\to $C},\text{NN$\to
+$C},\text{BH$\to $H},\text{NC$\to $B},\text{NB$\to $B},\text{BN$\to $B},\text{BB$\to $N},\text{BC$\to $B},\text{CC$\to $N},\text{CN$\to $C}\}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\pmb{\text{rules}=\text{Map}[(\text{Characters}@\text{StringTake}[\#,2]\to \{\{\text{StringTake}[\#,\{1\}],\text{StringTake}[\#,\{4\}]\},\{\text{StringTake}[\#,\{4\}],\text{StringTake}[\#,\{2\}]\}\})\&,\text{stringrules}]\text{//}\text{Sort}}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\{\{\text{B},\text{B}\}\to \{\{\text{B},\text{N}\},\{\text{N},\text{B}\}\},\{\text{B},\text{C}\}\to \{\{\text{B},\text{B}\},\{\text{B},\text{C}\}\},\{\text{B},\text{H}\}\to
+\{\{\text{B},\text{H}\},\{\text{H},\text{H}\}\},\{\text{B},\text{N}\}\to \{\{\text{B},\text{B}\},\{\text{B},\text{N}\}\},\{\text{C},\text{B}\}\to
+\{\{\text{C},\text{H}\},\{\text{H},\text{B}\}\},\{\text{C},\text{C}\}\to \{\{\text{C},\text{N}\},\{\text{N},\text{C}\}\},\{\text{C},\text{H}\}\to
+\{\{\text{C},\text{B}\},\{\text{B},\text{H}\}\},\{\text{C},\text{N}\}\to \{\{\text{C},\text{C}\},\{\text{C},\text{N}\}\},\{\text{H},\text{B}\}\to
+\{\{\text{H},\text{C}\},\{\text{C},\text{B}\}\},\{\text{H},\text{C}\}\to \{\{\text{H},\text{B}\},\{\text{B},\text{C}\}\},\{\text{H},\text{H}\}\to
+\{\{\text{H},\text{N}\},\{\text{N},\text{H}\}\},\{\text{H},\text{N}\}\to \{\{\text{H},\text{C}\},\{\text{C},\text{N}\}\},\{\text{N},\text{B}\}\to
+\{\{\text{N},\text{B}\},\{\text{B},\text{B}\}\},\{\text{N},\text{C}\}\to \{\{\text{N},\text{B}\},\{\text{B},\text{C}\}\},\{\text{N},\text{H}\}\to
+\{\{\text{N},\text{C}\},\{\text{C},\text{H}\}\},\{\text{N},\text{N}\}\to \{\{\text{N},\text{C}\},\{\text{C},\text{N}\}\}\}\)
+\end{doublespace}
+
+\section*{Create Matrix of Pair Insertion}
+
+\begin{doublespace}
+\noindent\(\pmb{\text{intmapping}=\text{MapIndexed}[\text{$\#$1}\to \text{First}@\text{$\#$2}\&,\text{rules}[[\text{All},1]]]}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\{\{\text{B},\text{B}\}\to 1,\{\text{B},\text{C}\}\to 2,\{\text{B},\text{H}\}\to 3,\{\text{B},\text{N}\}\to 4,\{\text{C},\text{B}\}\to
+5,\{\text{C},\text{C}\}\to 6,\{\text{C},\text{H}\}\to 7,\{\text{C},\text{N}\}\to 8,\{\text{H},\text{B}\}\to 9,\{\text{H},\text{C}\}\to 10,\{\text{H},\text{H}\}\to
+11,\{\text{H},\text{N}\}\to 12,\{\text{N},\text{B}\}\to 13,\{\text{N},\text{C}\}\to 14,\{\text{N},\text{H}\}\to 15,\{\text{N},\text{N}\}\to 16\}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\pmb{\{\text{B},\text{B}\}\to \{\{\text{B},\text{N}\},\{\text{N},\text{B}\}\}\text{/.}\text{intmapping}}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(1\to \{4,13\}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\pmb{\text{transformations}=\text{Map}[\{\{\#[[2,1]],\#[[1]]\},\{\#[[2,2]],\#[[1]]\}\}\&,\text{rules}]\text{/.}\text{intmapping}\text{//}\text{Flatten}[\#,1]\&}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\{\{4,1\},\{13,1\},\{1,2\},\{2,2\},\{3,3\},\{11,3\},\{1,4\},\{4,4\},\{7,5\},\{9,5\},\{8,6\},\{14,6\},\{5,7\},\{3,7\},\{6,8\},\{8,8\},\{10,9\},\{5,9\},\{9,10\},\{2,10\},\{12,11\},\{15,11\},\{10,12\},\{8,12\},\{13,13\},\{1,13\},\{13,14\},\{2,14\},\{14,15\},\{7,15\},\{14,16\},\{8,16\}\}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\pmb{\text{matrix}=\text{SparseArray}[\text{transformations}\to \text{Table}[1,\text{Length}@\text{transformations}],\{\text{Length}@\text{rules},\text{Length}@\text{rules}\}]}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\text{SparseArray}\left[\fbox{$$}\right]\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\pmb{\text{MatrixForm}[\text{matrix}]}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\left(
+\begin{array}{cccccccccccccccc}
+ 0 & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+ 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 \\
+ 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 1 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 \\
+ 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+ 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+ 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}
+\right)\)
+\end{doublespace}
+
+\section*{Initial Polymer}
+
+\begin{doublespace}
+\noindent\(\pmb{\text{Rule}\text{@@}\#\&\text{/@}(\text{Tally}@\text{Partition}[\text{Characters}[\text{lines}[[1]]],2,1]\text{/.}\text{intmapping})}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\{16\to 1,14\to 1,5\to 1\}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\pmb{\text{init}=\text{Table}[0,\text{Length}@\text{rules}]\text{//}\text{ReplacePart}[\text{Rule}\text{@@}\#\&\text{/@}(\text{Tally}@\text{Partition}[\text{polymertemplate},2,1]\text{/.}\text{intmapping})]}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\{0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,1\}\)
+\end{doublespace}
+
+\section*{Multiplication }
+
+\begin{doublespace}
+\noindent\(\pmb{\text{resultingpairs} = \text{MatrixPower}[\text{matrix},10,\text{init}]*\text{rules}[[\text{All},1]]}\\
+\pmb{\text{doubletotal}=\text{Total}@\text{Flatten}@\text{resultingpairs}+\text{First}@\text{polymertemplate}+\text{Last}@\text{polymertemplate}}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\{\{812 \text{B},812 \text{B}\},\{120 \text{B},120 \text{C}\},\{81 \text{B},81 \text{H}\},\{735 \text{B},735 \text{N}\},\{115 \text{C},115
+\text{B}\},\{60 \text{C},60 \text{C}\},\{21 \text{C},21 \text{H}\},\{102 \text{C},102 \text{N}\},\{26 \text{H},26 \text{B}\},\{76 \text{H},76 \text{C}\},\{32
+\text{H},32 \text{H}\},\{27 \text{H},27 \text{N}\},\{796 \text{N},796 \text{B}\},\{42 \text{N},42 \text{C}\},\{27 \text{N},27 \text{H}\},\{0,0\}\}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(3498 \text{B}+596 \text{C}+322 \text{H}+1730 \text{N}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(\pmb{\#[[1]]/2\&\text{/@}\text{List}\text{@@}\text{doubletotal}\text{//}\text{MinMax}\text{//}\text{Differences}\text{//}\text{First}}\)
+\end{doublespace}
+
+\begin{doublespace}
+\noindent\(1588\)
+\end{doublespace}
+
+\end{document}

@@ -34,9 +34,14 @@ Write-Warning ($max + 1)
 
 How many IPs are allowed by the blacklist?
 #>
-$allowed = 0
-$candidate = $list[0]
-$allowed += $candidate.Item1[0] - [UInt32]::MaxValue
+Write-Warning (wolframscript.exe -c '
+    text = ReadString[File[\"C:/Users/Martin/Documents/GitHub/AdventOfCode/2016/input20\"]];
+    list = ToExpression@StringSplit[#, \"-\"] &@StringSplit[text] // Sort;
+    lastmax = First@First@list;
+    2^32 - Total@First@Last@Reap@Scan[
+        (Sow@Max[0, #[[2]] - Max[#[[1]] - 1, lastmax]];lastmax = Max[lastmax, #[[2]]]) &
+        , list] - If[Length@list > 0, 1, 0]')
+# around 11ms in Mathematica
 
 
 

@@ -34,6 +34,19 @@ while ($iterator.MoveNext())
                 [void]$points.Add([tuple]::Create( 2 * $num - $_.item1, $_.item2))
             })
     }  
-    Write-Warning $points.Count
-    break
+    # Write-Warning $points.Count
+    # break
 }
+<#--- Part Two ---
+Finish folding the transparent paper according to the instructions. The manual says the code is always eight capital letters.
+
+What code do you use to activate the infrared thermal imaging camera system?#>
+$xrange = ($points | Sort-Object -Property Item1 | Select-Object Item1 -Last 1 -First 1).Item1
+$yrange = ($points | Sort-Object -Property Item2 | Select-Object Item2 -Last 1 -First 1).Item2
+$field = [string[][]]::new(($yrange[1] - $yrange[0] + 1))
+(0..($field.Count - 1)).ForEach({ $field[$_] = ($xrange[0]..$xrange[1]).foreach({ '.' }) })
+$points.ForEach({
+        $field[$_.item2][$_.item1] = '#'
+    })
+
+($field | ForEach-Object { $_ -join '' }) | Write-Warning

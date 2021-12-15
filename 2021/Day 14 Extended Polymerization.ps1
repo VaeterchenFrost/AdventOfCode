@@ -13,8 +13,8 @@ What do you get if you take the quantity of the most common element and subtract
 Apply 40 steps of pair insertion to the polymer template and find the most and least common elements in the result. 
 What do you get if you take the quantity of the most common element and subtract the quantity of the least common element? #>
 
-wolframscript.exe -c '
-    steps = 10
+Write-Warning (wolframscript.exe -c '
+    steps = 40
     lines=StringSplit[ReadString[File[\"C:/Users/Martin/Documents/GitHub/AdventOfCode/2021/input14\"]],\"\n\"]
     (First@Differences@MinMax@(#[[1]] / 2 & /@
         List @@ (Total@Flatten@(MatrixPower[SparseArray[# -> Table[1, Length@#] &@
@@ -24,6 +24,6 @@ wolframscript.exe -c '
             Rule @@ # & /@ (Tally@Partition[Characters@lines[[1]], 2, 1] /.
                 MapIndexed[#1 -> First@#2 &, #[[All, 1]]])]] * #[[All, 1]]) +
         First@Characters@lines[[1]] + Last@Characters@lines[[1]])) &@
-    Sort[Map[(Characters@StringTake[#, 2] -> {{StringTake[#, {1}],
-        StringTake[#, {-1}]},
-        {StringTake[#, {-1}], StringTake[#, {2}]}}) &, lines[[3 ;;]]]]) '
+    Sort[Map[(Characters@StringTake[#, 2] -> {{StringTake[#, {1}], StringTake[#, {-1}]}, {StringTake[#, {-1}], StringTake[#, {2}]}}) &
+            , lines[[3 ;;]]]]) '
+)

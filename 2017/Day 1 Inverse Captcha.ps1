@@ -6,5 +6,5 @@ The list is circular, so the digit after the last digit is the first digit in th
 $file = $PSScriptRoot + '/input1'
 $t = (Get-Content(Get-ChildItem ($file))).ToCharArray()
 
-$c = 0; (1..$t.Length).ForEach({ if ($t[$_ - $t.Length / 2 - 1] -eq $t[$_ - 1]) { $c += [int][string]$t[$_ - 1] } })
+$c = 0; (1..$t.Length).ForEach({ if ($t[$_ - $t.Length / 2 - 1] -eq $t[$_ - 1]) { $c += $t[$_ - 1] - 48 } })
 Write-Warning $c

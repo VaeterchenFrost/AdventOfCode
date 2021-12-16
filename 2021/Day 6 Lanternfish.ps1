@@ -12,7 +12,7 @@ Suppose the lanternfish live forever and have unlimited food and space. Would th
 After 256 days in the example above, there would be a total of 26984457539 lanternfish!
 How many lanternfish would there be after 256 days?
 #>
-Import-Module functional
+Import-Module functional -DisableNameChecking
 $file = $PSScriptRoot + "/input6"
 $numbers = [System.IO.File]::ReadAllText((Get-ChildItem $file)) -split "," | ForEach-Object { [int]$_ }
 #$numbers = @(1)

@@ -6,7 +6,7 @@ To show how the tiles should be reassembled, each tile's image data includes a b
 All tiles have this border, and the border lines up exactly when the tiles are both oriented correctly. 
 Tiles at the edge of the image also have this border, but the outermost edges won't line up with any other tiles.
 #>
-Import-Module functional
+Import-Module functional -DisableNameChecking
 
 function borderToInt ($instring) {
     ($instring | Select-String "#" -AllMatches).Matches.Index  

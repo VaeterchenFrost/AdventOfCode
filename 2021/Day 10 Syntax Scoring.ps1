@@ -20,7 +20,7 @@ take the first illegal character on the line and look it up in the following tab
   }: 1197 points.
   >: 25137 points.
 Find the first illegal character in each corrupted line of the navigation subsystem. What is the total syntax error score for those errors?#>
-Import-Module functional
+Import-Module functional -DisableNameChecking
 
 $file = $PSScriptRoot + '/input10'
 $iterator = [System.IO.File]::ReadLines($file)

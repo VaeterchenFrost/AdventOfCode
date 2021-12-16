@@ -1,4 +1,4 @@
-<#Day15
+<# --- Day 15: Chiton ---
 You start in the top left position, your destination is the bottom right position, and you cannot move diagonally. 
 The number at each position is its risk level; to determine the total risk of an entire path, 
 add up the risk levels of each position you enter

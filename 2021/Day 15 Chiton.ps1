@@ -35,4 +35,4 @@ $output = (wolframscript.exe -c '
  c@ToExpression[Characters /@ lines] // AbsoluteTiming')
 
 Write-Host $output
-Write-Warning ($output -split ',')[1].Substring(1, $in[1].Length - 3)
+Write-Warning ([regex]::match(($output -split ',')[1],"\d+").Value)

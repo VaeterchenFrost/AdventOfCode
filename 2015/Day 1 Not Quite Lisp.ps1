@@ -9,3 +9,4 @@ $text = (Get-Content(Get-ChildItem ($file)))
 $c = $text.ToCharArray()
 $counter = 0
 (1..$text.Length).foreach({ $counter += 1 - 2 * ($c[$_ - 1] -eq ')'); if ($counter -lt 0) { Write-Warning $_; break } })
+Write-Warning $counter

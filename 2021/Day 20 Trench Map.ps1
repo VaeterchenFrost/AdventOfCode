@@ -33,5 +33,5 @@ $iterations.Foreach({
         \"RuleNumber\" -> FromDigits[Reverse@First@lines, 2], \"Dimension\" -> 2, \"Neighborhood\" -> 9|>
         , {lines[[2 ;;]] , 0}, {{{#1}}, All}]
     , Infinity])&' -s Integer -args $_);
-        Write-Debug $output })
+        Write-Debug "$_ : $output" })
 Write-Warning ([regex]::match(($output -split ',')[1], '\d+').Value)

@@ -14,17 +14,19 @@ For example:
 How many IPs in your puzzle input support TLS?
 #>
 
-$day = 7
+$year, $day = 2016, 7
 
 $inputfile = $PSScriptRoot + "/input${day}"
-if (-not ($text = Get-Content $inputfile)) {
-    $request = Invoke-WebRequest -Uri "https://adventofcode.com/2016/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+if (-not ($text = Get-Content $inputfile))
+{
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
     Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
     $text = $request.Content
     Out-File -FilePath $inputfile -InputObject $text.Trim()
 }
 
-$supportTLS = foreach ($line in $text.Split('\n')) {
+$supportTLS = foreach ($line in $text.Split())
+{
     $brackets = $bad = $good = $false
     (0..($line.Length - 4)).foreach( { 
             if ($line[$_] -eq '[') { $brackets = $true }; 
@@ -38,5 +40,36 @@ $supportTLS = foreach ($line in $text.Split('\n')) {
 Write-Warning ($supportTLS.Where({ $_ }).count)  
 
 <#--- Part Two ---
+You would also like to know which IPs support SSL (super-secret listening).
 
-#>
+An IP supports SSL if it has an Area-Broadcast Accessor, or ABA, anywhere in the supernet sequences (outside any square bracketed sections), 
+and a corresponding Byte Allocation Block, or BAB, anywhere in the hypernet sequences. 
+An ABA is any three-character sequence which consists of the same character twice with a different character between them, such as xyx or aba. 
+A corresponding BAB is the same characters but in reversed positions: yxy and bab, respectively.
+How many IPs in your puzzle input support SSL? #>
+$abas = New-Object 'System.Collections.Generic.HashSet[string]'
+$babs = New-Object 'System.Collections.Generic.HashSet[string]'
+$supportSSL = foreach ($line in $text.Split())
+{
+    $brackets = $good = $false
+    foreach ($c in 0..($line.Length - 3))
+    { 
+        if ($line[$c] -eq '[') { $brackets = $true; continue }
+        elseif ($line[$c] -eq ']') { $brackets = $false; continue }
+        if ('[', ']' -contains $line[$c + 1]  ) { continue }
+        elseif ($line[$c] -eq $line[$c + 2] -and $line[$c] -ne $line[$c + 1])
+        {
+            if (-not $brackets -and $abas.Add(($line[$c..($c + 2)] -join '')) -and 
+                $babs.Contains(($line[$c + 1], $line[$c], $line[$c + 1] -join ''))) { $good = $true ; break } 
+            if ( $brackets -and $babs.Add(($line[$c..($c + 2)] -join '')) -and 
+                $abas.Contains(($line[$c + 1], $line[$c], $line[$c + 1] -join ''))) { $good = $true ; break }              
+        }
+    }
+    Write-Debug "$good for $line"
+    Write-Debug "$abas"
+    Write-Debug "$babs"
+    $abas.Clear()
+    $babs.Clear()
+    $good
+}
+Write-Warning ($supportSSL.Where({ $_ }).count)  

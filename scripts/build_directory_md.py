@@ -81,7 +81,6 @@ def print_directory_md(top_dir: str = ".") -> None:
     """Print the markdown for files with selected extensions recursing top_dir."""
     old_path = ""
     sorted_file_path = sorted(good_file_paths(top_dir), key=natural_keys)
-    print(sorted_file_path)
     for filepath in sorted_file_path:
         filepath, filename = os.path.split(filepath)
         if filepath != old_path:

@@ -24,30 +24,31 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
 OR OTHER DEALINGS IN THE SOFTWARE.
 
 """
-
-
 import os
+import re
 from typing import Iterator
 from urllib.parse import quote
 
 URL_BASE = "https://github.com/VaeterchenFrost/AdventOfCode/blob/main"
 
-AFFECTED_EXT = ('.ps1', '.py',)
+AFFECTED_EXT = (
+    ".ps1",
+    ".py",
+)
 
-EXCLUDED_FILENAMES = ('__init__.py',)
+EXCLUDED_FILENAMES = ("__init__.py",)
 
 
-def good_file_paths(top_dir: str = '.') -> Iterator[str]:
+def good_file_paths(top_dir: str = ".") -> Iterator[str]:
     """Return relative path to files with extension in AFFECTED_EXT."""
     for dir_path, dir_names, filenames in os.walk(top_dir):
-        dir_names[:] = [d for d in dir_names
-                        if d != 'scripts' and d[0] not in '._']
+        dir_names[:] = [d for d in dir_names if d != "scripts" and d[0] not in "._"]
         for filename in filenames:
             if filename in EXCLUDED_FILENAMES:
                 continue
             if os.path.splitext(filename)[1] in AFFECTED_EXT:
                 normalized_path = os.path.normpath(dir_path)
-                if normalized_path != '.':
+                if normalized_path != ".":
                     yield os.path.join(normalized_path, filename)
                 else:
                     yield filename
@@ -68,19 +69,30 @@ def print_path(old_path: str, new_path: str) -> str:
     return new_path
 
 
-def print_directory_md(top_dir: str = '.') -> None:
+def atoi(text):
+    return int(text) if text.isdigit() else text
+
+
+def natural_keys(text):
+    return [atoi(c) for c in re.split("(\d+)", text)]
+
+
+def print_directory_md(top_dir: str = ".") -> None:
     """Print the markdown for files with selected extensions recursing top_dir."""
-    old_path = ''
-    for filepath in sorted(good_file_paths(top_dir)):
+    old_path = ""
+    sorted_file_path = sorted(good_file_paths(top_dir), key=natural_keys)
+    print(sorted_file_path)
+    for filepath in sorted_file_path:
         filepath, filename = os.path.split(filepath)
         if filepath != old_path:
             old_path = print_path(old_path, filepath)
         indent = (filepath.count(os.sep) + 1) if filepath else 0
-        url = '/'.join((URL_BASE, *[quote(part)
-                                    for part in (filepath, filename) if part]))
-        filename = os.path.splitext(filename.replace('_', ' ').title())[0]
+        url = "/".join(
+            (URL_BASE, *[quote(part) for part in (filepath, filename) if part])
+        )
+        filename = os.path.splitext(filename.replace("_", " ").title())[0]
         print(f"{md_prefix(indent)} [{filename}]({url})")
 
 
 if __name__ == "__main__":
-    print_directory_md('.')
+    print_directory_md(".")

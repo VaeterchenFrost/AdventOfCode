@@ -5,8 +5,16 @@ The risk level of a low point is 1 plus its height. In the above example, the ri
 Find all of the low points on your map. What is the sum of the risk levels of all low points on your map? #>
 Import-Module functional -DisableNameChecking
 
-$file = $PSScriptRoot + '/input9'
-$lines = Get-Content(Get-ChildItem ($file))
+$year, $day = 2021, 9
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
+
 $vertical = $lines.Length
 $horizontal = $lines[0].Length
 $padding = [int]::MaxValue

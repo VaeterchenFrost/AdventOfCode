@@ -24,8 +24,15 @@ You finally arrive at the bathroom (it's a several minute walk from the lobby so
 
 You still start at "5" and stop when you're at an edge #>
 
-$file = $PSScriptRoot + "/input2"
-$directions = (Get-Content(Get-ChildItem ($file))) 
+$year, $day = 2016, 2
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
 
 $x = $y = 0
 $x = -2
@@ -37,7 +44,7 @@ $bathroom_keypad_design = @{
     '02' = 'D'
 }
 $code = ''
-$directions.ForEach({
+$lines.ForEach({
         foreach ($instruction in ($_.ToCharArray())) {
             switch ($instruction) {
                 'D' { $y = [Math]::Min($y + 1, 2 - [math]::abs($x)) } 

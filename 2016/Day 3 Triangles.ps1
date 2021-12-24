@@ -4,8 +4,15 @@ In a valid triangle, the sum of any two sides must be larger than the remaining 
 In your puzzle input, how many of the listed triangles are possible?#>
 Import-Module functional -DisableNameChecking
 
-$file = $PSScriptRoot + "/input3"
-$lines = (Get-Content(Get-ChildItem ($file))) 
+$year, $day = 2016, 3
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
 
 function findnumbers($string) {
     ($string | Select-String '(\d+)' -AllMatches).Matches.Value | % { [int]$_ }

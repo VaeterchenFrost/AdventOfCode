@@ -30,9 +30,17 @@ b    .  b    .  .    c  b    c  b    c
 
  In the output values, how many times do digits 1, 4, 7, or 8 appear? #>
 
-$file = $PSScriptRoot + '/input8'
-$iterator = [System.IO.File]::ReadLines($file)
-Write-Warning $iterator.ForEach({ $_.Split('|')[1].Split(' ').Where({ (2, 4, 3, 7) -contains $_.length }) }).Count
+$year, $day = 2021, 8
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+  $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+  Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+  Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+  $lines = Get-Content $inputfile
+}
+
+Write-Warning $lines.ForEach({ $_.Split('|')[1].Split(' ').Where({ (2, 4, 3, 7) -contains $_.length }) }).Count
 
 <# --- Part Two ---
 Through a little deduction, you should now be able to determine the remaining digits. Consider again the first example above:
@@ -97,10 +105,9 @@ $letters = @{
   # 8 = 'a', 'b', 'c', 'd', 'e', 'f', 'g'; 
   9 = 'a', 'b', 'c', 'd', 'f', 'g' 
 }
-$iterator = [System.IO.File]::ReadLines($file)
+
 $result = 0
-foreach ($line in $iterator)
-{
+foreach ($line in $lines) {
   $leftpart, $rightpart = $line.Split('|')
   $words = ($leftpart | Select-String '(\w+)' -AllMatches).Matches.Value
   $counts = ($leftpart | Select-String '(\w)' -AllMatches).Matches.Value | Group-Object | Select-Object Name, Count
@@ -124,14 +131,12 @@ foreach ($line in $iterator)
   }
 
   $lineresult = ''
-  foreach ($string in $outputvalues) # can also check the length of strings and shortcut the bigger selection
-  {
+  foreach ($string in $outputvalues) { # can also check the length of strings and shortcut the bigger selection
     if ($string.Length -eq 2) { $lineresult += 1 }
     elseif ($string.Length -eq 3) { $lineresult += 7 }
     elseif ($string.Length -eq 4) { $lineresult += 4 }
     elseif ($string.Length -eq 7) { $lineresult += 8 }
-    else
-    {
+    else {
       $segment = ($string -split '')[1..$string.Length].ForEach({ $wiring[$_] })
       Write-Debug ($segment -join '')
       $lineresult += $letters.keys.Where({ -not (Compare-Object $segment $letters[$_]) })

@@ -22,12 +22,20 @@ take the first illegal character on the line and look it up in the following tab
 Find the first illegal character in each corrupted line of the navigation subsystem. What is the total syntax error score for those errors?#>
 Import-Module functional -DisableNameChecking
 
-$file = $PSScriptRoot + '/input10'
-$iterator = [System.IO.File]::ReadLines($file)
+$year, $day = 2021, 10
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
+
 $error_score = @{[char]')' = 3; [char]']' = 57; [char]'}' = 1197; [char]'>' = 25137; }
 $score = 0
 $stack = [System.Collections.Stack]::new() 
-$iterator.ForEach({
+$lines.ForEach({
     Write-Debug $_
     foreach ($c in $_.ToCharArray()) {
       if ( ('(', '<', '[', '{') -contains $c) {
@@ -62,9 +70,8 @@ then increase the total score by the point value given for the character in the 
 Find the completion string for each incomplete line, score the completion strings, and sort the scores. What is the middle score? #>
 
 $scores = [System.Collections.Stack]::new() 
-$iterator = [System.IO.File]::ReadLines($file)
 $error_score = @{[char]'(' = 1; [char]'[' = 2; [char]'{' = 3; [char]'<' = 4; }
-$iterator.ForEach({
+$lines.ForEach({
     Write-Debug $_
     $discard = $false
     foreach ($c in $_.ToCharArray()) {

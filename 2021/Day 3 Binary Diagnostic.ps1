@@ -23,9 +23,17 @@ Multiplying the gamma rate (22) by the epsilon rate (9) produces the power consu
 Use the binary numbers in your diagnostic report to calculate the gamma rate and epsilon rate, then multiply them together. What is the power consumption of the submarine?
 #>
 
-$file = $PSScriptRoot + '/input3'
+$year, $day = 2021, 3
 
-$instructions = Get-Content(Get-ChildItem ($file))
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
+
+$instructions = $lines
 $stringlength = $instructions[0].Length
 $c = [int[]]::new($stringlength)
 

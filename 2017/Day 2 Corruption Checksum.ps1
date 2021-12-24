@@ -10,9 +10,17 @@ that is, where the result of the division operation is a whole number.
 They would like you to find those numbers on each line, divide them, and add up each line's result. #>
 Import-Module functional -DisableNameChecking
 
-$file = $PSScriptRoot + '/input2'
-$t = (Get-Content(Get-ChildItem ($file)))
-Write-Warning ($t | ForEach-Object { $d = ($_ -split '\s+') | ForEach-Object { [int]$_ }; # | Sort-Object;
+$year, $day = 2017, 2
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
+
+Write-Warning ($lines | ForEach-Object { $d = ($_ -split '\s+') | ForEach-Object { [int]$_ }; # | Sort-Object;
         # $d[-1] - $d[0] } |
         foreach ($item in $d)
         {

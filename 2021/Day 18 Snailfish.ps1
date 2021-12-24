@@ -22,11 +22,10 @@ Add up all of the snailfish numbers from the homework assignment in the order th
 $year, $day = 2021, 18
 
 $inputfile = $PSScriptRoot + "/input${day}"
-if (-not ($text = Get-Content $inputfile)) {
+if (-not (Get-Content $inputfile)) {
     $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
     Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
-    $text = $request.Content
-    Out-File -FilePath $inputfile -InputObject $text
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
 }
 
 $output = (wolframscript.exe -c '

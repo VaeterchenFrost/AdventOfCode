@@ -41,8 +41,8 @@ class App:
         # To learn more about the Cypher syntax, see https://neo4j.com/docs/cypher-manual/current/
         # The Reference Card is also a good resource for keywords https://neo4j.com/docs/cypher-refcard/current/
         query = (
-            "CREATE (p1:Person { name: $person1_name }) "
-            "CREATE (p2:Person { name: $person2_name }) "
+            "MERGE (p1:Person { name: $person1_name }) "
+            "MERGE (p2:Person { name: $person2_name }) "
             "CREATE (p1)-[k:KNOWS { from: $knows_from }]->(p2) "
             "RETURN p1, p2, k"
         )
@@ -84,15 +84,25 @@ class App:
         result = tx.run(query, person_name=person_name)
         return [row["name"] for row in result]
 
+    @staticmethod
+    def _clear_database(tx):
+        query = "MATCH (n) DETACH DELETE n"
+        tx.run(query)
+        return True
+
+    def clear_database(self):
+        with self.driver.session() as session:
+            # Write transactions allow the driver to handle retries and transient errors
+            result = session.write_transaction(self._clear_database)
+
 
 if __name__ == "__main__":
     config = dotenv_values(".env")
-    bolt_url = config["serverurl"]
-    user = config["user"]
-    password = config["password"]
     App.enable_log(logging.INFO, sys.stdout)
-    app = App(bolt_url, user, password)
+    app = App(config["serverurl"], config["user"], config["password"])
+    app.clear_database()
 
     app.create_friendship("Alice", "David", "School")
+    app.create_friendship("Alice", "David", "Game")
     app.find_person("Alice")
     app.close()

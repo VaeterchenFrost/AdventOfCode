@@ -20,13 +20,20 @@ For example, the real name for qzmt-zixmtkozy-ivhz-343 is very encrypted name.
 What is the sector ID of the room where North Pole objects are stored?#>
 
 
-$file = $PSScriptRoot + '/input4'
-$iterator = [System.IO.File]::ReadLines($file)
+$year, $day = 2016, 4
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
 $sum = 0
 function rotate ($char, $num) {
     return [char]((([int]$char - 97 + $num) % 26) + 97)
 }
-$iterator.ForEach({
+$lines.ForEach({
         $split = $_.Split('-')
         $id, $checksum = $split[-1] -split '\['
         $countnames = $split.count - 2

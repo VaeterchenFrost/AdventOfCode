@@ -15,9 +15,17 @@ There is no measurement before the first measurement. In the example above, the 
 263 (increased) 
 #>
 
-$file = $PSScriptRoot + "/input1"
+$year, $day = 2021, 1
 
-$measurements = Get-Content(Get-ChildItem ($file)) | ForEach-Object { [int]$_ }
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($text = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    $text = $request.Content
+    Out-File -FilePath $inputfile -InputObject $text
+}
+
+$measurements = $text.Split() | ForEach-Object { [int]$_ }
 
 $increased = 0
 foreach ($index in (0..($measurements.Length - 2))) {

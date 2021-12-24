@@ -6,28 +6,33 @@ The transparent paper is marked with random dots and includes instructions on ho
 fold the paper up (for horizontal y=... lines) or left (for vertical x=... lines)
 How many dots are visible after completing just the first fold instruction on your transparent paper?#>
 
-$file = $PSScriptRoot + '/input13'
-$iterator = [System.IO.File]::ReadLines($file)
+$year, $day = 2021, 13
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
+$iterator = $lines.GetEnumerator()
+
 $points = New-Object 'System.Collections.Generic.HashSet[Tuple[int,int]]'
-while ($iterator.MoveNext() -and $iterator.current -match ',')
-{       
+while ($iterator.MoveNext() -and $iterator.current -match ',') {       
     $point = ($iterator.current -split ',') | ForEach-Object { [int]$_ }
     [void]$points.Add([tuple]::Create($point[0], $point[1] ))      
 }
 
-while ($iterator.MoveNext())
-{
+while ($iterator.MoveNext()) {
     $instruction, $num = $iterator.Current -split '='
-    if ($instruction.endswith('y'))
-    {
+    if ($instruction.endswith('y')) {
         Write-Debug "Fold at: y $num"
         $points.Where({ $_.item2 -gt $num }).foreach({
                 [void]$points.Remove($_)
                 [void]$points.Add([tuple]::Create($_.item1, 2 * $num - $_.item2))
             })
     }
-    else
-    {
+    else {
         Write-Debug "Fold at: x $num"
         $points.Where({ $_.item1 -gt $num }).foreach({
                 [void]$points.Remove($_)

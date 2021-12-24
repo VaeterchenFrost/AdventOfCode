@@ -8,11 +8,18 @@ These line segments include the points at both ends.
 Consider only horizontal and vertical lines. At how many points do at least two lines overlap?
 #>
 
-$file = $PSScriptRoot + "/input5"
-$lines = Get-Content(Get-ChildItem ($file))
+$year, $day = 2021, 5
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
 
 $numbers = $lines.foreach(
-    { ($_ | Select-String "(\d+)" -AllMatches).Matches.Value | ForEach-Object { [int]$_ } }
+    { ($_ | Select-String '(\d+)' -AllMatches).Matches.Value | ForEach-Object { [int]$_ } }
 )
 $min, $max = $numbers | Sort-Object | Select-Object -First 1 -Last 1
 

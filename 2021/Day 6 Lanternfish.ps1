@@ -13,8 +13,18 @@ After 256 days in the example above, there would be a total of 26984457539 lante
 How many lanternfish would there be after 256 days?
 #>
 Import-Module functional -DisableNameChecking
-$file = $PSScriptRoot + "/input6"
-$numbers = [System.IO.File]::ReadAllText((Get-ChildItem $file)) -split "," | ForEach-Object { [int]$_ }
+
+$year, $day = 2021, 6
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
+
+$numbers = $lines -split "," | ForEach-Object { [int]$_ }
 #$numbers = @(1)
 
 $fishes_per_day = [bigint[]]::new(9)

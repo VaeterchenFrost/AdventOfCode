@@ -13,6 +13,15 @@ What do you get if you take the quantity of the most common element and subtract
 Apply 40 steps of pair insertion to the polymer template and find the most and least common elements in the result. 
 What do you get if you take the quantity of the most common element and subtract the quantity of the least common element? #>
 
+$year, $day = 2021, 14
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not (Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+}
+
 Write-Warning (wolframscript.exe -c '
     steps = 40
     lines=StringSplit[ReadString[File[\"C:/Users/Martin/Documents/GitHub/AdventOfCode/2021/input14\"]],\"\n\"]

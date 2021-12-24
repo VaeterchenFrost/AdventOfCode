@@ -12,14 +12,13 @@ the rest of the input image consists of dark pixels.
 Start with the original input image and apply the image enhancement algorithm twice, being careful to account for the infinite size of the images. 
 How many pixels are lit in the resulting image?#>
 
-$day = 20
+$year, $day = 2021, 20
 
 $inputfile = $PSScriptRoot + "/input${day}"
-if (-not ($text = Get-Content $inputfile)) {
-    $request = Invoke-WebRequest -Uri "https://adventofcode.com/2021/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+if (-not (Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
     Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
-    $text = $request.Content
-    Out-File -FilePath $inputfile -InputObject $text
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
 }
 <# --- Part Two --- 
 Start again with the original input image and apply the image enhancement algorithm 50 times. 

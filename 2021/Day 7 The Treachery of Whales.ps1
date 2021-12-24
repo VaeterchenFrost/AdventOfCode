@@ -21,8 +21,16 @@ As each crab moves, moving further becomes more expensive.
 This changes the best horizontal position to align them all on; in the example above, this becomes 5
 #>
 
-$file = $PSScriptRoot + '/input7'
-$numbers = [System.IO.File]::ReadAllText((Get-ChildItem $file)) -split ',' | ForEach-Object { [int]$_ }
+$year, $day = 2021, 7
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
+$numbers = $lines -split ',' | ForEach-Object { [int]$_ }
 
 $positions = $numbers | Group-Object | Select-Object Name, Count 
 $positions.ForEach({ $_.name = [int]$_.Name }) # string per default

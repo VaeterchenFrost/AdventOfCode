@@ -1,7 +1,14 @@
 <# --- Day 16: Packet Decoder ---#>
 
-$file = $PSScriptRoot + '/input16'
-$string = (Get-Content(Get-ChildItem ($file)))
+$year, $day = 2021, 16
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not (Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+}
+$string = Get-Content($inputfile)
 
 # The first step of decoding the message is to convert the hexadecimal representation into binary. 
 # Each character of hexadecimal corresponds to four bits of binary data:

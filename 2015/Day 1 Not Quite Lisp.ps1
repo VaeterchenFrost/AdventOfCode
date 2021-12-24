@@ -4,9 +4,17 @@ An opening parenthesis, (, means he should go up one floor, and a closing parent
 The apartment building is very tall, and the basement is very deep; he will never find the top or bottom floors.
 To what floor do the instructions take Santa? #>
 
-$file = $PSScriptRoot + '/input1'
-$text = (Get-Content(Get-ChildItem ($file)))
-$c = $text.ToCharArray()
+$year, $day = 2015, 1
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
+
+$c = $lines.ToCharArray()
 $counter = 0
 (1..$text.Length).foreach({ $counter += 1 - 2 * ($c[$_ - 1] -eq ')'); if ($counter -lt 0) { Write-Warning $_; break } })
 Write-Warning $counter

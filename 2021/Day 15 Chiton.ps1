@@ -12,6 +12,14 @@ one tile in a 5x5 tile area that forms the full map. Your original map tile repe
 each time the tile repeats to the right or downward, all of its risk levels are 1 higher than the tile immediately up or left of it. 
 However, risk levels above 9 wrap back around to 1.
 Using the full map, what is the lowest total risk of any path from the top left to the bottom right?#>
+$year, $day = 2021, 15
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not (Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+}
 
 $output = (wolframscript.exe -c '
     lines = StringSplit[ReadString[File[\"C:/Users/Martin/Documents/GitHub/AdventOfCode/2021/input15\"]]];

@@ -17,16 +17,23 @@ After following these instructions, you would have a horizontal position of 15 a
     up X decreases the depth by X units.
 #>
 
-$file = $PSScriptRoot + "/input2"
+$year, $day = 2021, 2
 
-$instructions = Get-Content(Get-ChildItem ($file))
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+    $lines = Get-Content $inputfile
+}
+
 $horizontal = $depth = 0
 
-foreach ($instruction in $instructions) {
-    $val = $instruction -split " "
-    if ( $val[0] -eq "forward" ) { $horizontal += $val[1] }
-    elseif ( $val[0] -eq "down" ) { $depth += $val[1] }
-    elseif ($val[0] -eq "up" ) { $depth -= $val[1] }
+foreach ($instruction in $lines) {
+    $val = $instruction -split ' '
+    if ( $val[0] -eq 'forward' ) { $horizontal += $val[1] }
+    elseif ( $val[0] -eq 'down' ) { $depth += $val[1] }
+    elseif ($val[0] -eq 'up' ) { $depth -= $val[1] }
     else { Write-Output "error in instruction $instruction" }
 }
 Write-Warning ($horizontal * $depth)
@@ -55,11 +62,11 @@ After following these new instructions, you would have a horizontal position of 
 
 $horizontal = $depth = $aim = 0
 
-foreach ($instruction in $instructions) {
-    $val = $instruction -split " "
-    if ( $val[0] -eq "forward" ) { $horizontal += $val[1]; $depth += $aim * $val[1] }
-    elseif ( $val[0] -eq "down" ) { $aim += $val[1] }
-    elseif ($val[0] -eq "up" ) { $aim -= $val[1] }
+foreach ($instruction in $lines) {
+    $val = $instruction -split ' '
+    if ( $val[0] -eq 'forward' ) { $horizontal += $val[1]; $depth += $aim * $val[1] }
+    elseif ( $val[0] -eq 'down' ) { $aim += $val[1] }
+    elseif ($val[0] -eq 'up' ) { $aim -= $val[1] }
     else { Write-Output "error in instruction $instruction" }
 }
 Write-Warning ($horizontal * $depth)

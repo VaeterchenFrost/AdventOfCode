@@ -13,8 +13,16 @@ You can model the energy levels and flashes of light in steps. During a single s
 
 Given the starting energy levels of the dumbo octopuses in your cavern, simulate 100 steps. How many total flashes are there after 100 steps?#>
 
-$file = $PSScriptRoot + '/input11'
-$lines = Get-Content(Get-ChildItem ($file))
+$year, $day = 2021, 11
+
+$inputfile = $PSScriptRoot + "/input${day}"
+if (-not ($lines = Get-Content $inputfile)) {
+  $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+  Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+  Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+  $lines = Get-Content $inputfile
+}
+
 $columns = 1..10 # expected
 $energy_levels = [int[][]]::new($lines.Count + 2)
 $flashed = New-Object 'System.Collections.Generic.HashSet[Tuple[int,int]]'
@@ -50,9 +58,10 @@ do {
   # Flashes
   while ($to_flash.Count) {
     $flash = $to_flash.Pop()
-      ((-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)).ForEach({
+        ((-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)).ForEach({
         $tuple = [System.Tuple]::Create($flash[0] + $_[0], $flash[1] + $_[1])
-        if ($energy_levels[$tuple[0]][$tuple[1]]) {  # not a border
+        if ($energy_levels[$tuple[0]][$tuple[1]]) {
+          # not a border
           $energy_levels[$tuple[0]][$tuple[1]] += 1
           if ($energy_levels[$tuple[0]][$tuple[1]] -gt 9 -and $flashed.Add($tuple)) {
             $to_flash.Push($tuple)

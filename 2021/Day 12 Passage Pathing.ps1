@@ -35,13 +35,13 @@ CREATE CONSTRAINT cave_name_key IF NOT EXISTS
 FOR (n:Cave)
 REQUIRE n.name IS NODE KEY;
 
-MATCH (n) DETACH DELETE n;
 WITH split('we-NX ys-px ys-we px-end yq-NX px-NX yq-px qk-yq pr-NX wq-EY pr-oe wq-pr ys-end start-we ys-start oe-DW EY-oe end-oe pr-yq pr-we wq-start oe-NX yq-EY ys-wq ys-pr',' ') AS lines
 UNWIND lines AS line
 WITH split(line, '-') AS vertices
 MERGE (from:Cave {name: vertices[0]})
 MERGE (to:Cave {name: vertices[1]})
-MERGE (from)-[:CONNECTED_TO]->(to);
+MERGE (from)-[r:CONNECTED_TO]->(to)
+ON CREATE r.mult = 1;
 #>
 
 <# Labels:
@@ -87,7 +87,7 @@ MATCH (e:Cave {name:"end"})
 match (c:Cave) with count(c) as caves,s,e CALL apoc.path.expandConfig(s, {
     relationshipFilter: "CONNECTED_TO>",
     minLevel: 1,
-    maxLevel: caves,
+    maxLevel: caves-1,
     uniqueness: "NODE_PATH",
     terminatorNodes: [e]
 })
@@ -104,3 +104,94 @@ once you leave the start cave, you may not return to it, and once you reach the 
 the path must end immediately.
 Given these new rules, how many paths through this cave system are there?#>
 
+<#
+MATCH (s:Cave {name:"start"})
+MATCH (e:Cave {name:"end"})
+match (c:Cave) with count(c) as caves,s,e CALL apoc.path.expandConfig(s, {
+    relationshipFilter: "CONNECTED_TO>|LOOP>",
+    minLevel: 1,
+    maxLevel: caves,
+    terminatorNodes: [e],
+    blacklistNodes: [s]
+})
+YIELD path
+WITH path, apoc.coll.duplicatesWithCount(nodes(path)) as dupl
+WHERE size(dupl) = 0 OR (size(dupl) = 1 and dupl[0]["count"]=2)
+RETURN sum(reduce(acc = 1, r IN relationships(path) | acc*r.mult)) AS reduction
+#>
+
+<# ================MULT=====================
+MATCH (n) DETACH DELETE n;
+
+CREATE CONSTRAINT cave_name_key IF NOT EXISTS
+FOR (n:Cave)
+REQUIRE n.name IS NODE KEY;
+
+WITH split('we-NX ys-px ys-we px-end yq-NX px-NX yq-px qk-yq pr-NX wq-EY pr-oe wq-pr ys-end start-we ys-start oe-DW EY-oe end-oe pr-yq pr-we wq-start oe-NX yq-EY ys-wq ys-pr',' ') AS lines
+UNWIND lines AS line
+WITH split(line, '-') AS vertices
+MERGE (from:Cave {name: vertices[0]})
+MERGE (to:Cave {name: vertices[1]})
+MERGE (from)-[r:CONNECTED_TO]->(to)
+ON CREATE SET r.mult = 1;
+
+MATCH (c:Cave)
+WITH c, CASE c.name = toLower(c.name)
+WHEN true THEN ["Small"] ELSE ["Big"] END AS cave_type
+CALL apoc.create.addLabels(c, cave_type)
+YIELD node
+RETURN node;
+
+MATCH (s1:Small)-[:CONNECTED_TO]-(big:Big)-[:CONNECTED_TO]-(s2:Small)
+WHERE id(s1) < id(s2)
+MERGE (s1)-[r:CONNECTED_TO ]->(s2)
+ON CREATE SET r.mult = 1
+ON MATCH SET r.mult = r.mult +1;
+
+MATCH (s:Small)-[:CONNECTED_TO]-(big:Big)
+WHERE NOT s.name IN ["start", "end"]
+MERGE (s)-[r:LOOP]->(s)
+ON CREATE SET r.mult = 1
+ON MATCH SET r.mult = r.mult +1;
+
+MATCH (b:Big) DETACH DELETE b;
+
+MATCH (s:Small)-[:CONNECTED_TO]-(leaf:Small)
+WHERE apoc.node.degree(leaf, "CONNECTED_TO") = 1
+MERGE (s)-[r:LOOP]->(s)
+ON CREATE SET r.mult = 1
+ON MATCH SET r.mult = r.mult +1
+DETACH DELETE leaf;
+
+MATCH (s1:Small)-[r:CONNECTED_TO]->(s2:Small)
+CREATE (s1)<-[:CONNECTED_TO {mult:r.mult}]-(s2);
+
+MATCH (s:Cave {name:"start"})
+MATCH (e:Cave {name:"end"})
+match (c:Cave) with count(c) as caves,s,e CALL apoc.path.expandConfig(s, {
+    relationshipFilter: "CONNECTED_TO>",
+    minLevel: 1,
+    maxLevel: caves-1,
+    uniqueness: "NODE_PATH",
+    terminatorNodes: [e]
+})
+YIELD path 
+RETURN sum(reduce(acc = 1, r IN relationships(path) | acc*r.mult)) AS reduction
+#>
+
+<#DEBUG: $expect.Split() | %{$_.Split(',').Where({('b','c') -contains $_})-join ''} | group
+MATCH (s:Cave {name:"start"})
+MATCH (e:Cave {name:"end"})
+match (c:Cave) with count(c) as caves,s,e CALL apoc.path.expandConfig(s, {
+    relationshipFilter: "CONNECTED_TO|LOOP",
+    minLevel: 1,
+    maxLevel: caves,
+    terminatorNodes: [e],
+    blacklistNodes: [s]
+})
+YIELD path
+WITH path, apoc.coll.duplicatesWithCount(nodes(path)) as dupl
+WHERE size(dupl) = 0 OR (size(dupl) = 1 and dupl[0]["count"]=2)
+RETURN reduce(acc = '', n IN nodes(path)[1..(size(nodes(path))-1)] | acc+n.name) AS string,
+reduce(acc = 1, r IN relationships(path) | acc*r.mult) AS reduction
+#>

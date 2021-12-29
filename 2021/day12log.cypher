@@ -69,3 +69,77 @@ YIELD path
 WITH path, apoc.coll.duplicatesWithCount(nodes(path)) as dupl
 WHERE size(dupl) = 0 OR (size(dupl) = 1 and dupl[0]["count"]=2)
 RETURN sum(reduce(acc = 1, r IN relationships(path) | acc*r.mult)) AS reduction;
+
+// DEBUG: $expect.Split() | %{$_.Split(',').Where({('b','c') -contains $_})-join ''} | group
+MATCH (s:Cave {name:"start"})
+MATCH (e:Cave {name:"end"})
+CALL apoc.meta.stats() yield nodeCount
+CALL apoc.path.expandConfig(s, {
+    relationshipFilter: "PATH",
+    maxLevel: nodeCount,
+    terminatorNodes: [e],
+    blacklistNodes: [s]
+})
+YIELD path 
+WITH path, apoc.coll.duplicatesWithCount(nodes(path)) as dupl
+WHERE size(dupl) = 0 OR (size(dupl) = 1 and dupl[0]["count"]=2)
+RETURN reduce(acc = '', n IN nodes(path)[1..(size(nodes(path))-1)] | acc+n.name) AS string,
+reduce(acc = 1, r IN relationships(path) | acc*r.mult) AS reduction
+
+create (acc:Buffer{value:0})
+
+// Copies:
+DROP CONSTRAINT cave_name_key IF EXISTS;
+CREATE INDEX cave_name_index IF NOT EXISTS FOR (n:Cave) ON (n.name);
+
+MATCH (c:Cave {name:"c"}) 
+CALL apoc.refactor.cloneNodesWithRelationships([c])
+YIELD input, output SET output.name="copy" with c,output
+MATCH (c)-[r:PATH]-(c) merge (c)-[:PATH {mult:r.mult}]->(output) 
+
+// Doubles
+with c
+MATCH (s:Cave {name:"start"})
+MATCH (e:Cave {name:"end"})
+MATCH (co:Cave {name:"copy"})
+CALL apoc.meta.stats() yield nodeCount
+CALL apoc.path.expandConfig(s, {
+    relationshipFilter: "PATH",
+    maxLevel: nodeCount-1,
+    terminatorNodes: [e],
+    uniqueness: "NODE_PATH"
+})
+YIELD path 
+where c in nodes(path) and co in nodes(path)
+with path,co, sum(reduce(acc = 0.5, r IN relationships(path) | acc*r.mult)) AS reduction
+detach delete c
+return reduction;
+
+// Doubles
+MATCH (c:Cave {name:"ys"}) 
+CALL apoc.refactor.cloneNodesWithRelationships([c])
+YIELD input, output SET output.name="copy" with c,output
+MATCH (c)-[r:PATH]-(c) merge (c)-[:PATH {mult:r.mult}]->(output) 
+
+// Doubles
+with c
+MATCH (s:Cave {name:"start"})
+MATCH (e:Cave {name:"end"})
+MATCH (co:Cave {name:"copy"})
+CALL apoc.meta.stats() yield nodeCount
+CALL apoc.path.expandConfig(s, {
+    relationshipFilter: "PATH",
+    maxLevel: nodeCount-1,
+    terminatorNodes: [e],
+    uniqueness: "NODE_PATH"
+})
+YIELD path 
+where c in nodes(path) and co in nodes(path)
+with sum(reduce(acc = 0.5, r IN relationships(path) | acc*r.mult))as reduction
+MATCH (buf:Buffer)
+SET buf.value=buf.value+reduction;
+MATCH (co:Cave {name:"copy"})
+DETACH DELETE co;
+
+// 4398.0 9157.0 4730.0 7913.0 2311.0 7061.0
+// value: 66616.0

@@ -42,5 +42,6 @@
   * [Day 16 Packet Decoder](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2016%20Packet%20Decoder.ps1)
   * [Day 18 Snailfish](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2018%20Snailfish.ps1)
   * [Day 20 Trench Map](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2020%20Trench%20Map.ps1)
+  * [Day12](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/day12.py)
 
 ## [Neo4Jexample](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/neo4jexample.py)

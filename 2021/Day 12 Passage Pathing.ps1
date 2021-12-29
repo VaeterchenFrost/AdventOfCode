@@ -195,3 +195,16 @@ WHERE size(dupl) = 0 OR (size(dupl) = 1 and dupl[0]["count"]=2)
 RETURN reduce(acc = '', n IN nodes(path)[1..(size(nodes(path))-1)] | acc+n.name) AS string,
 reduce(acc = 1, r IN relationships(path) | acc*r.mult) AS reduction
 #>
+
+<# PYTHON MATRIX MANIPULATION:
+PS C:\Users\DIMROEBK\AppData\Local\Programs\Python\Python310> .\python.exe 
+
+nodes=['we', 'ys', 'px', 'yq', 'pr', 'wq', 'start', 'oe', 'end']
+m=[[1, 1, 1, 1, 2, 0, 1, 1, 0], [1, 0, 1, 0, 1, 1, 1, 0, 1], [1, 1, 1, 2, 1, 0, 0, 1, 1], [1, 0, 2, 3, 2, 1, 0, 2, 0], [2, 1, 1, 2, 1, 1, 0, 2, 0], [0, 1, 0, 1, 1, 1, 1, 1, 0], [1, 1, 0, 0, 0, 1, 0, 0, 0], [1, 0, 1, 2, 2, 1, 0, 3, 1], [0, 1, 1, 0, 0, 0, 0, 1, 0]]
+wam = np.array(m) 
+wam[nodes.index('start')]=0
+wam[::,nodes.index('end')]=0 
+start=np.zeros(len(m),dtype=int)
+start[nodes.index('start')]=1
+np.dot(wam,start)
+#>

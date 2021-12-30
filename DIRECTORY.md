@@ -1,6 +1,7 @@
 
 ## 2015
   * [Day 1 Not Quite Lisp](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2015/Day%201%20Not%20Quite%20Lisp.ps1)
+  * [Day 2 I Was Told There Would Be No Math](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2015/Day%202%20I%20Was%20Told%20There%20Would%20Be%20No%20Math.ps1)
 
 ## 2016
   * [Day 1 No Time For A Taxicab](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2016/Day%201%20No%20Time%20for%20a%20Taxicab.ps1)

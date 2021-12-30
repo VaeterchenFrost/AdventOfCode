@@ -15,7 +15,7 @@ Given the list of blocked IPs you retrieved from the firewall (your puzzle input
 
 $year, $day = 2016, 20
 
-$inputfile = $PSScriptRoot + "/input${day}"
+$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
 if (-not ($lines = Get-Content $inputfile)) {
     $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
     Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
@@ -41,14 +41,19 @@ Write-Warning ($max + 1)
 
 How many IPs are allowed by the blacklist?
 #>
-Write-Warning (wolframscript.exe -c '
-    text = ReadString[File[\"C:/Users/Martin/Documents/GitHub/AdventOfCode/2016/input20\"]];
+$result = (wolframscript.exe -c ('
+    text = ReadString[File[\"' + $inputfile + '\"]];
     list = ToExpression@StringSplit[#, \"-\"] &@StringSplit[text] // Sort;
     lastmax = First@First@list;
     2^32 - Total@First@Last@Reap@Scan[
         (Sow@Max[0, #[[2]] - Max[#[[1]] - 1, lastmax]];lastmax = Max[lastmax, #[[2]]]) &
-        , list] - If[Length@list > 0, 1, 0]')
+        , list] - If[Length@list > 0, 1, 0]')) 
 # around 11ms in Mathematica
+
+($result -match 'password') ? "Please check the license and possibly concurrent Wolfram kernels ($((Get-Process -Name WolframKernel).Count) WolframKernel, "`
+    + "$((Get-Process -Name Mathematica).Count) Mathematica running now)" 
+: $result
+| Write-Warning
 
 
 

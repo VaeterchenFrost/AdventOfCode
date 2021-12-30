@@ -15,16 +15,16 @@ What do you get if you take the quantity of the most common element and subtract
 
 $year, $day = 2021, 14
 
-$inputfile = $PSScriptRoot + "/input${day}"
+$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
 if (-not (Get-Content $inputfile)) {
     $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
     Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
     Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
 }
 
-$result = wolframscript.exe -rawterm -c '
+$result = wolframscript.exe -c ('
     steps = 40;
-    lines=StringSplit[Import[File[\"C:/Users/Martin/Documents/GitHub/AdventOfCode/2021/input14\"]],\"\n\"]
+    lines=StringSplit[Import[File[\"' + $inputfile + '\"]],\"\n\"]
     (First@Differences@MinMax@(#[[1]] / 2 & /@
         List @@ (Total@Flatten@(MatrixPower[SparseArray[# -> Table[1, Length@#] &@
             (Map[{{#[[2, 1]], #[[1]]}, {#[[2, 2]], #[[1]]}} &, #] /.
@@ -34,7 +34,7 @@ $result = wolframscript.exe -rawterm -c '
                 MapIndexed[#1 -> First@#2 &, #[[All, 1]]])]] * #[[All, 1]]) +
         First@Characters@lines[[1]] + Last@Characters@lines[[1]])) &@
     Sort[Map[(Characters@StringTake[#, 2] -> {{StringTake[#, {1}], StringTake[#, {-1}]}, {StringTake[#, {-1}], StringTake[#, {2}]}}) &
-            , lines[[3 ;;]]]]) '
+            , lines[[3 ;;]]]]) ')
 
 ($result -match 'password') ? "Please check the license and possibly concurrent Wolfram kernels ($((Get-Process -Name WolframKernel).Count) WolframKernel, "`
     + "$((Get-Process -Name Mathematica).Count) Mathematica running now)" 

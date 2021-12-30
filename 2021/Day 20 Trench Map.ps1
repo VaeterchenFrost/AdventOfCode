@@ -14,7 +14,7 @@ How many pixels are lit in the resulting image?#>
 
 $year, $day = 2021, 20
 
-$inputfile = $PSScriptRoot + "/input${day}"
+$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
 if (-not (Get-Content $inputfile)) {
     $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
     Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
@@ -24,13 +24,15 @@ if (-not (Get-Content $inputfile)) {
 Start again with the original input image and apply the image enhancement algorithm 50 times. 
 How many pixels are lit in the resulting image? #>
 
-$iterations = (2, 50)
-$iterations.Foreach({ 
-        $output = (wolframscript.exe -fun 'AbsoluteTiming@(
-    lines = Characters@StringSplit[ReadString[\"C:/Users/Martin/Documents/GitHub/AdventOfCode/2021/input20\"]]/. {\".\" -> 0, \"#\" -> 1};
+$wolframcode = 'AbsoluteTiming@(
+    lines = Characters@StringSplit[ReadString[\"' + $inputfile + '\"]]/. {\".\" -> 0, \"#\" -> 1};
     Total[CellularAutomaton[<|
         \"RuleNumber\" -> FromDigits[Reverse@First@lines, 2], \"Dimension\" -> 2, \"Neighborhood\" -> 9|>
         , {lines[[2 ;;]] , 0}, {{{#1}}, All}]
-    , Infinity])&' -s Integer -args $_);
+    , Infinity])&'
+$output = @()
+$iterations = (2, 50)
+$iterations.Foreach({ 
+        $output += (wolframscript.exe -fun $wolframcode -s Integer -args $_);
         Write-Debug "$_ : $output" })
-Write-Warning ([regex]::match(($output -split ',')[1], '\d+').Value)
+$output | ForEach-Object { Write-Warning ([regex]::match(($_ -split ',')[1], '\d+').Value) }

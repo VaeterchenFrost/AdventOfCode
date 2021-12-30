@@ -14,15 +14,15 @@ However, risk levels above 9 wrap back around to 1.
 Using the full map, what is the lowest total risk of any path from the top left to the bottom right?#>
 $year, $day = 2021, 15
 
-$inputfile = $PSScriptRoot + "/input${day}"
+$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
 if (-not (Get-Content $inputfile)) {
-    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
-    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
-    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
+  $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
+  Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
+  Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
 }
 
-$output = (wolframscript.exe -c '
-    lines = StringSplit[ReadString[File[\"C:/Users/Martin/Documents/GitHub/AdventOfCode/2021/input15\"]]];
+$output = (wolframscript.exe -c ('
+    lines = StringSplit[ReadString[File[\"' + $inputfile + '\"]]];
     c = Quiet@Compile[{{levelsin, _Integer, 2}}, levels=levelsin; (*Two lines for Part 2:*)
     levels = Join @@ Table[Mod[levels + i - 1, 9, 1], {i, 5}];
     levels = (Join @@ Table[Mod[# + i - 1, 9, 1], {i, 5}]) & /@ levels;
@@ -40,7 +40,15 @@ $output = (wolframscript.exe -c '
             Range[Length@levels - 1], {column, 1, llen}];
           ][[2]], 2], {llen^2, llen^2}, Infinity], 1, llen^2],
     {{llen, _Integer}, {levels, _Integer, 2}}];
- c@ToExpression[Characters /@ lines] // AbsoluteTiming')
+ c@ToExpression[Characters /@ lines] // AbsoluteTiming'))
 
-Write-Host $output
-Write-Warning ([regex]::match(($output -split ',')[1],"\d+").Value)
+if ($output -match 'password') {
+  "Please check the license and possibly concurrent Wolfram kernels ($((Get-Process -Name WolframKernel).Count) WolframKernel, "`
+    + "$((Get-Process -Name Mathematica).Count) Mathematica running now)" | Write-Warning
+}
+else {
+  Write-Host $output
+  Write-Warning ([regex]::match(($output -split ',')[1], '\d+').Value)
+}
+
+

@@ -21,16 +21,16 @@ Add up all of the snailfish numbers from the homework assignment in the order th
 
 $year, $day = 2021, 18
 
-$inputfile = $PSScriptRoot + "/input${day}"
+$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
 if (-not (Get-Content $inputfile)) {
     $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
     Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
     Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
 }
 
-$output = (wolframscript.exe -c '
+$output = wolframscript.exe -c ('
 tolist = ToExpression[StringReplace[#, {FromCharacterCode[91] -> FromCharacterCode[123], FromCharacterCode[93] -> FromCharacterCode[125]}]]&;
-lines = tolist /@ StringSplit[ReadString[\"C:/Users/Martin/Documents/GitHub/AdventOfCode/2021/input18\"]];
+lines = tolist /@ StringSplit[ReadString[\"' + $inputfile + '\"]];
 magnitude = ReplaceRepeated[#, List[x_Integer, y_Integer] :> 3 x + 2 y]&;
 findexplode = Most@First@Position[#, _, {5}, 1]&;
 findsplit = First@Position[#, _?(# >= 10 &), All, 1]&;
@@ -59,6 +59,14 @@ explode[listin_] := Module[{list, explode, nextleft, nextright}, list = listin;
 (* Part 1: magnitude@Fold[FixedPoint[split@FixedPoint[explode, #] &, List[#1, #2]] &, lines] // AbsoluteTiming *)
  magnitude@Fold[FixedPoint[split@FixedPoint[explode, #] &, List[#1, #2]] &, #] & /@ 
     Permutations[lines, {2}] // Max // AbsoluteTiming')
-Write-Warning ([regex]::match(($output -split ',')[1], '\d+').Value)
 
 <# --- Part Two --- What is the largest magnitude of any sum of two different snailfish numbers from the homework assignment? #>
+
+if ($output -match 'password') {
+    "Please check the license and possibly concurrent Wolfram kernels ($((Get-Process -Name WolframKernel).Count) WolframKernel, "`
+        + "$((Get-Process -Name Mathematica).Count) Mathematica running now)" | Write-Warning
+}
+else {
+    Write-Host $output
+    Write-Warning ([regex]::match(($output -split ',')[1], '\d+').Value)
+}

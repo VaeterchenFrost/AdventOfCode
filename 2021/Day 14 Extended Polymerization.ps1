@@ -22,9 +22,9 @@ if (-not (Get-Content $inputfile)) {
     Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
 }
 
-Write-Warning (wolframscript.exe -c '
-    steps = 40
-    lines=StringSplit[ReadString[File[\"C:/Users/Martin/Documents/GitHub/AdventOfCode/2021/input14\"]],\"\n\"]
+$result = wolframscript.exe -rawterm -c '
+    steps = 40;
+    lines=StringSplit[Import[File[\"C:/Users/Martin/Documents/GitHub/AdventOfCode/2021/input14\"]],\"\n\"]
     (First@Differences@MinMax@(#[[1]] / 2 & /@
         List @@ (Total@Flatten@(MatrixPower[SparseArray[# -> Table[1, Length@#] &@
             (Map[{{#[[2, 1]], #[[1]]}, {#[[2, 2]], #[[1]]}} &, #] /.
@@ -35,4 +35,8 @@ Write-Warning (wolframscript.exe -c '
         First@Characters@lines[[1]] + Last@Characters@lines[[1]])) &@
     Sort[Map[(Characters@StringTake[#, 2] -> {{StringTake[#, {1}], StringTake[#, {-1}]}, {StringTake[#, {-1}], StringTake[#, {2}]}}) &
             , lines[[3 ;;]]]]) '
-)
+
+($result -match 'password') ? "Please check the license and possibly concurrent Wolfram kernels ($((Get-Process -Name WolframKernel).Count) WolframKernel, "`
+    + "$((Get-Process -Name Mathematica).Count) Mathematica running now)" 
+: $result
+| Write-Warning

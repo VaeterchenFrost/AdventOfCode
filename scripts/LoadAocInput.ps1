@@ -1,4 +1,4 @@
-$DOTENVFILE = Resolve-Path '../.env'
+$DOTENVFILE = Join-Path $PSScriptRoot '../.env' | Resolve-Path
 
 function load_aoc_input($year, $day, $inputfile) {
     if (-not ($text = Get-Content $inputfile -ErrorAction SilentlyContinue)) {

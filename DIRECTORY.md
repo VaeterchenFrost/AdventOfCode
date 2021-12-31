@@ -37,6 +37,7 @@
   * [Day 10 Syntax Scoring](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2010%20Syntax%20Scoring.ps1)
   * [Day 11 Dumbo Octopus](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2011%20Dumbo%20Octopus.ps1)
   * [Day 12 Passage Pathing](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2012%20Passage%20Pathing.ps1)
+  * [Day 12 Passage Pathing](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2012%20Passage%20Pathing.py)
   * [Day 13 Transparent Origami](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2013%20Transparent%20Origami.ps1)
   * [Day 14 Extended Polymerization](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2014%20Extended%20Polymerization.ps1)
   * [Day 15 Chiton](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2015%20Chiton.ps1)

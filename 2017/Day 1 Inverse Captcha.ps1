@@ -5,13 +5,9 @@ The list is circular, so the digit after the last digit is the first digit in th
 
 $year, $day = 2017, 1
 
-$inputfile = $PSScriptRoot + "/input${day}"
-if (-not ($lines = Get-Content $inputfile)) {
-    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
-    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
-    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
-    $lines = Get-Content $inputfile
-}
+. "$PSScriptRoot/../scripts/LoadAocInput.ps1"
+$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$lines = load_aoc_input $year $day $inputfile
 
 $t = $lines.ToCharArray()
 

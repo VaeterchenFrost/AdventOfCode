@@ -17,15 +17,11 @@ There is no measurement before the first measurement. In the example above, the 
 
 $year, $day = 2021, 1
 
-$inputfile = $PSScriptRoot + "/input${day}"
-if (-not ($text = Get-Content $inputfile)) {
-    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
-    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
-    $text = $request.Content
-    Out-File -FilePath $inputfile -InputObject $text
-}
+. "$PSScriptRoot/../scripts/LoadAocInput.ps1"
+$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$lines = load_aoc_input $year $day $inputfile
 
-$measurements = $text.Split() | ForEach-Object { [int]$_ }
+$measurements = $lines.Split() | ForEach-Object { [int]$_ }
 
 $increased = 0
 foreach ($index in (0..($measurements.Length - 2))) {

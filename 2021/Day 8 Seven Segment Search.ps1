@@ -32,13 +32,9 @@ b    .  b    .  .    c  b    c  b    c
 
 $year, $day = 2021, 8
 
-$inputfile = $PSScriptRoot + "/input${day}"
-if (-not ($lines = Get-Content $inputfile)) {
-  $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
-  Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
-  Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
-  $lines = Get-Content $inputfile
-}
+. "$PSScriptRoot/../scripts/LoadAocInput.ps1"
+$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$lines = load_aoc_input $year $day $inputfile
 
 Write-Warning $lines.ForEach({ $_.Split('|')[1].Split(' ').Where({ (2, 4, 3, 7) -contains $_.length }) }).Count
 

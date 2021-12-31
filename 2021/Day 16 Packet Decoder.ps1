@@ -2,13 +2,9 @@
 
 $year, $day = 2021, 16
 
-$inputfile = $PSScriptRoot + "/input${day}"
-if (-not (Get-Content $inputfile)) {
-    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
-    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
-    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
-}
-$string = Get-Content($inputfile)
+. "$PSScriptRoot/../scripts/LoadAocInput.ps1"
+$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$string = load_aoc_input $year $day $inputfile
 
 # The first step of decoding the message is to convert the hexadecimal representation into binary. 
 # Each character of hexadecimal corresponds to four bits of binary data:

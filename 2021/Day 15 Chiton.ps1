@@ -14,12 +14,9 @@ However, risk levels above 9 wrap back around to 1.
 Using the full map, what is the lowest total risk of any path from the top left to the bottom right?#>
 $year, $day = 2021, 15
 
+. "$PSScriptRoot/../scripts/LoadAocInput.ps1"
 $inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
-if (-not (Get-Content $inputfile)) {
-  $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
-  Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
-  Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
-}
+load_aoc_input $year $day $inputfile | Out-Null
 
 $output = (wolframscript.exe -c ('
     lines = StringSplit[ReadString[File[\"' + $inputfile + '\"]]];

@@ -6,6 +6,8 @@ from neo4j import GraphDatabase
 import numpy as np
 import time
 
+LOGGER = logging.getLogger("Day 12 Passage Pathing.py")
+
 
 def pathing(wam, visited, posi, end, twice=True):
     """
@@ -49,23 +51,82 @@ def day12of2021(nodes: List[str], matrix: List[List[int]]):
 class AoC2021Day12:
     def __init__(self, uri, user, password):
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
-        self.logger = logging.getLogger(self.__class__.__name__)
+        LOGGER.info(
+            f"{self.__class__.__name__} started driver {self.driver.__class__.__name__} "
+        )
 
     def __del__(self):
+        LOGGER.info("Closing")
         self.driver.close()
-        self.logger.info(
+        LOGGER.info(
             f"{self.__class__.__name__} closed driver {self.driver.__class__.__name__}"
         )
 
-    def enable_log(self, level, output_stream):
-        handler = logging.StreamHandler(output_stream)
-        handler.setLevel(level)
-        self.logger.addHandler(handler)
-        self.logger.setLevel(level)
+    @staticmethod
+    def _clear_database(tx, labelfilter: List[str] = None):
+        labels = [""]
+        if labelfilter:
+            labels += labelfilter
+        query = f"MATCH (n{':'.join(labels)}) DETACH DELETE n"
+        tx.run(query)
+        return True
 
     @staticmethod
-    def _clear_database(tx):
-        query = "MATCH (n) DETACH DELETE n"
+    def _add_constraint(tx):
+        query = """CREATE CONSTRAINT cave_name_key IF NOT EXISTS 
+        FOR (n:Cave) 
+        REQUIRE n.name IS NODE KEY;"""
+        tx.run(query)
+        return True
+
+    @staticmethod
+    def _add_cavelabels(tx):
+        query = """MATCH (c:Cave)
+        WITH c, CASE c.name = toLower(c.name)
+        WHEN true THEN ["Small"] ELSE ["Big"] END AS cave_type
+        CALL apoc.create.addLabels(c, cave_type)
+        YIELD node
+        RETURN node;"""
+        tx.run(query)
+        return True
+
+    @staticmethod
+    def _add_connected_over_big(tx):
+        query = r"""MATCH (s1:Small)-[:CONNECTED_TO]-(big:Big)-[:CONNECTED_TO]-(s2:Small)
+        WHERE id(s1) < id(s2)
+        MERGE (s1)-[:CONNECTED_TO {via: big.name}]->(s2);"""
+        tx.run(query)
+        return True
+
+    @staticmethod
+    def _add_loop_over_big(tx):
+        query = r"""MATCH (s:Small)-[:CONNECTED_TO]-(big:Big)
+        WHERE NOT s.name IN ["start", "end"]
+        MERGE (s)-[:LOOP {via: big.name}]->(s);"""
+        tx.run(query)
+        return True
+
+    @staticmethod
+    def _add_loop_over_leaf(tx):
+        query = r"""MATCH (s:Small)-[:CONNECTED_TO]-(leaf:Small)
+        WHERE apoc.node.degree(leaf, "CONNECTED_TO") = 1
+        MERGE (s)-[:LOOP {via: leaf.name}]->(s)
+        DETACH DELETE leaf;"""
+        tx.run(query)
+        return True
+
+    @staticmethod
+    def _create_graph(tx, edges: List[str]):
+        delim = " "
+        query = (
+            f"WITH split('{delim.join(edges)}','{delim}') AS lines"
+            r"""
+        UNWIND lines AS line
+        WITH split(line, '-') AS vertices
+        MERGE (from:Cave {name: vertices[0]})
+        MERGE (to:Cave {name: vertices[1]})
+        MERGE (from)-[:CONNECTED_TO]->(to);"""
+        )
         tx.run(query)
         return True
 
@@ -102,13 +163,38 @@ class AoC2021Day12:
             # Write transactions allow the driver to handle retries and transient errors
             session.write_transaction(self._clear_database)
 
+    def create_prepare_graph(self, edges: List[str]):
+        with self.driver.session() as session:
+            LOGGER.info(
+                f"Clearing database: {session.write_transaction(self._clear_database)}"
+            )
+            LOGGER.info(
+                f"Adding edges: {session.write_transaction(self._create_graph, edges)}"
+            )
+            LOGGER.info(
+                f"Adding edges connected over big: {session.write_transaction(self._add_connected_over_big)}"
+            )
+            LOGGER.info(
+                f"Adding loop over big: {session.write_transaction(self._add_loop_over_big)}"
+            )
+            LOGGER.info(
+                f"Removing big caves: {session.write_transaction(self._clear_database, ['Big'])}"
+            )
+            LOGGER.info(
+                f"Adding labels: {session.write_transaction(self._add_loop_over_leaf)}"
+            )
+
 
 if __name__ == "__main__":
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setLevel(logging.INFO)
+    LOGGER.addHandler(handler)
+    LOGGER.setLevel(logging.INFO)
     config = dotenv_values(".env")
     app = AoC2021Day12(
         config["NEO4J_SERVERURL"], config["NEO4J_USER"], config["NEO4J_PASSWORD"]
     )
-    app.enable_log(logging.INFO, sys.stdout)
     # app.clear_database()
+    app.create_prepare_graph()
     day12of2021(**app.get_adjacency_matrix())
     del app

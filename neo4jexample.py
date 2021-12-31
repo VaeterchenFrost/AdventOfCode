@@ -99,7 +99,7 @@ class App:
 if __name__ == "__main__":
     config = dotenv_values(".env")
     App.enable_log(logging.INFO, sys.stdout)
-    app = App(config["serverurl"], config["user"], config["password"])
+    app = App(config["NEO4J_SERVERURL"], config["NEO4J_USER"], config["NEO4J_PASSWORD"])
     app.clear_database()
 
     app.create_friendship("Alice", "David", "School")

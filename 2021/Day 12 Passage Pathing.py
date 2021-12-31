@@ -32,21 +32,25 @@ def pathing(wam, visited, posi, end, twice=True):
     )
 
 
-def day12of2021(nodes: List[str], matrix: List[List[int]]):
+def day12of2021(nodes: List[str], matrix: List[List[int]]) -> List[int]:
     wam = np.array(matrix)
     wam[nodes.index("start")] = 0
     wam[::, nodes.index("end")] = 0
-
-    start_time = time.perf_counter()
-    result = pathing(np.copy(wam), [], nodes.index("start"), nodes.index("end"), False)
-    end_time = time.perf_counter()
-    print("Part 1 ", round((end_time - start_time) * 1000, 3), "milliseconds")
-    print(result)
-    start_time = time.perf_counter()
-    result = pathing(np.copy(wam), [], nodes.index("start"), nodes.index("end"))
-    end_time = time.perf_counter()
-    print("Part 2 ", round((end_time - start_time) * 1000, 3), "milliseconds")
-    print(result)
+    results = []
+    for part2 in [False, True]:
+        start_time = time.perf_counter()
+        result = pathing(
+            np.copy(wam), [], nodes.index("start"), nodes.index("end"), part2
+        )
+        end_time = time.perf_counter()
+        print(
+            f"Part {2 if part2 else 1} ",
+            round((end_time - start_time) * 1000, 3),
+            "milliseconds",
+        )
+        print(result)
+        results += result
+    return results
 
 
 class AoC2021Day12:

@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 import sys
 from typing import Any, Dict, List
 from dotenv import dotenv_values
@@ -73,7 +74,7 @@ class AoC2021Day12:
 
     @staticmethod
     def _add_constraint(tx):
-        query = """CREATE CONSTRAINT cave_name_key IF NOT EXISTS 
+        query = r"""CREATE CONSTRAINT cave_name_key IF NOT EXISTS 
         FOR (n:Cave) 
         REQUIRE n.name IS NODE KEY;"""
         tx.run(query)
@@ -81,7 +82,7 @@ class AoC2021Day12:
 
     @staticmethod
     def _add_cavelabels(tx):
-        query = """MATCH (c:Cave)
+        query = r"""MATCH (c:Cave)
         WITH c, CASE c.name = toLower(c.name)
         WHEN true THEN ["Small"] ELSE ["Big"] END AS cave_type
         CALL apoc.create.addLabels(c, cave_type)
@@ -132,7 +133,7 @@ class AoC2021Day12:
 
     @staticmethod
     def _read_adjacency_matrix(tx):
-        query = """
+        query = r"""
             MATCH (n)
             WITH collect(n) AS Nodes
             WITH 
@@ -172,6 +173,9 @@ class AoC2021Day12:
                 f"Adding edges: {session.write_transaction(self._create_graph, edges)}"
             )
             LOGGER.info(
+                f"Adding labels: {session.write_transaction(self._add_cavelabels)}"
+            )
+            LOGGER.info(
                 f"Adding edges connected over big: {session.write_transaction(self._add_connected_over_big)}"
             )
             LOGGER.info(
@@ -181,7 +185,7 @@ class AoC2021Day12:
                 f"Removing big caves: {session.write_transaction(self._clear_database, ['Big'])}"
             )
             LOGGER.info(
-                f"Adding labels: {session.write_transaction(self._add_loop_over_leaf)}"
+                f"Replacing leafs with loops: {session.write_transaction(self._add_loop_over_leaf)}"
             )
 
 
@@ -195,6 +199,8 @@ if __name__ == "__main__":
         config["NEO4J_SERVERURL"], config["NEO4J_USER"], config["NEO4J_PASSWORD"]
     )
     # app.clear_database()
-    app.create_prepare_graph()
+    inputfile = Path(__file__).parent / "input12"
+    with open(inputfile, "r") as file:
+        app.create_prepare_graph(edges=[s.strip() for s in file.readlines()])
     day12of2021(**app.get_adjacency_matrix())
     del app

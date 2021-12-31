@@ -16,14 +16,9 @@ How many IPs in your puzzle input support TLS?
 
 $year, $day = 2016, 7
 
-$inputfile = $PSScriptRoot + "/input${day}"
-if (-not ($text = Get-Content $inputfile))
-{
-    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
-    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
-    $text = $request.Content
-    Out-File -FilePath $inputfile -InputObject $text.Trim()
-}
+. "$PSScriptRoot/../scripts/LoadAocInput.ps1"
+$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$text = load_aoc_input $year $day $inputfile
 
 $supportTLS = foreach ($line in $text.Split())
 {

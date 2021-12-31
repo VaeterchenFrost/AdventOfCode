@@ -15,13 +15,9 @@ Given the list of blocked IPs you retrieved from the firewall (your puzzle input
 
 $year, $day = 2016, 20
 
+. "$PSScriptRoot/../scripts/LoadAocInput.ps1"
 $inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
-if (-not ($lines = Get-Content $inputfile)) {
-    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
-    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
-    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
-    $lines = Get-Content $inputfile
-}
+$lines = load_aoc_input $year $day $inputfile
 
 $list = $lines.ForEach({
         $range = $_.split('-').ForEach({ [UInt32]$_ })

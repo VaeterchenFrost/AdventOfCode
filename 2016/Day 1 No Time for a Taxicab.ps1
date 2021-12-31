@@ -14,13 +14,11 @@ How many blocks away is Easter Bunny HQ? #>
 
 $year, $day = 2016, 1
 
-$inputfile = $PSScriptRoot + "/input${day}"
-if (-not ($lines = Get-Content $inputfile)) {
-    $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:ADVENTOFCODE_SESSION"; Accept = 'text/plain' }
-    Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
-    Out-File -FilePath $inputfile -InputObject $request.Content.Trim()
-    $lines = Get-Content $inputfile
-}
+
+. "$PSScriptRoot/../scripts/LoadAocInput.ps1"
+$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$lines = load_aoc_input $year $day $inputfile
+
 $directions = $lines -split ', '
 
 $North, $East_, $South, $West_ = 0..3

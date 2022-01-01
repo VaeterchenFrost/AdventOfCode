@@ -1,3 +1,6 @@
+CREATE CONSTRAINT grid_pos_key IF NOT EXISTS
+ FOR (n:Posi)
+ REQUIRE n.pos IS NODE KEY;
 MATCH (n)
 DETACH DELETE n;
 WITH split('v...>>.vv>

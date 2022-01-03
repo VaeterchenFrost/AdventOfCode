@@ -1,0 +1,10 @@
+# To run: conda env create -f environment.yml
+name: aoc-martin
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python>=3.8
+  - neo4j-python-driver
+  - numpy
+  - python-dotenv

@@ -48,3 +48,9 @@
   * [Day12](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/day12.py)
 
 ## [Neo4Jexample](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/neo4jexample.py)
+
+## [Setup](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/setup.py)
+
+## Utilities
+  * [Utilities](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/utilities/utilities.py)
+  * [Version](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/utilities/version.py)

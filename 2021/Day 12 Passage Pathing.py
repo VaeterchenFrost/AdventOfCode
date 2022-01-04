@@ -26,9 +26,7 @@ def main(args: List[str]) -> None:
     None
     """
     parser = get_parser(
-        "Extracts Information from "
-        "https://github.com/hmarkus/dp_on_dbs runs "
-        "for further visualization."
+        "Solving AdventOfCode 2021 Day 12: Passage Pathing https://adventofcode.com/2021/day/12"
     )
     # get cmd-arguments
     options = parser.parse_args(args)

@@ -7,7 +7,45 @@ from neo4j import GraphDatabase
 import numpy as np
 import time
 
-LOGGER = logging.getLogger("Day 12 Passage Pathing.py")
+from utilities.utilities import get_parser, logging_cfg
+
+LOGGER = logging.getLogger("day122021.py")
+
+
+def main(args: List[str]) -> None:
+    """
+    Main method solving AdventOfCode 2021 day 12 for arguments in 'args'.
+
+    Parameters
+    ----------
+    args : List[str]
+        The array containing all (command-line) flags.
+
+    Returns
+    -------
+    None
+    """
+    parser = get_parser(
+        "Extracts Information from "
+        "https://github.com/hmarkus/dp_on_dbs runs "
+        "for further visualization."
+    )
+    # get cmd-arguments
+    options = parser.parse_args(args)
+
+    logging_cfg(filename="logging.ini", loglevel=options.loglevel)
+    LOGGER.info("Called with '%s'", options)
+
+    config = dotenv_values(".env")
+    app = AoC2021Day12(
+        config["NEO4J_SERVERURL"], config["NEO4J_USER"], config["NEO4J_PASSWORD"]
+    )
+    # app.clear_database()
+    inputfile = Path(__file__).parent / "input12"
+    with open(inputfile, "r") as file:
+        app.create_prepare_graph(edges=[s.strip() for s in file.readlines()])
+    day12of2021(**app.get_adjacency_matrix())
+    del app
 
 
 def pathing(wam, visited, posi, end, twice=True):
@@ -43,10 +81,10 @@ def day12of2021(nodes: List[str], matrix: List[List[int]]) -> List[int]:
             np.copy(wam), [], nodes.index("start"), nodes.index("end"), part2
         )
         end_time = time.perf_counter()
-        print(
-            f"Part {2 if part2 else 1} ",
+        LOGGER.info(
+            "Part %d %s milliseconds",
+            2 if part2 else 1,
             round((end_time - start_time) * 1000, 3),
-            "milliseconds",
         )
         print(result)
         results += result
@@ -151,11 +189,7 @@ class AoC2021Day12:
         result = tx.run(query)
 
         return [
-            {
-                "nodes": row["Nodes"],
-                "matrix": row["AdjacencyMatrix"],
-            }
-            for row in result
+            {"nodes": row["Nodes"], "matrix": row["AdjacencyMatrix"],} for row in result
         ]
 
     def get_adjacency_matrix(self) -> Dict[str, Any]:
@@ -193,18 +227,10 @@ class AoC2021Day12:
             )
 
 
-if __name__ == "__main__":
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.INFO)
-    LOGGER.addHandler(handler)
-    LOGGER.setLevel(logging.INFO)
-    config = dotenv_values(".env")
-    app = AoC2021Day12(
-        config["NEO4J_SERVERURL"], config["NEO4J_USER"], config["NEO4J_PASSWORD"]
-    )
-    # app.clear_database()
-    inputfile = Path(__file__).parent / "input12"
-    with open(inputfile, "r") as file:
-        app.create_prepare_graph(edges=[s.strip() for s in file.readlines()])
-    day12of2021(**app.get_adjacency_matrix())
-    del app
+def init():
+    """Initialization that is executed at the time of the module import."""
+    if __name__ == "__main__":
+        sys.exit(main(sys.argv[1:]))  # call main function
+
+
+init()

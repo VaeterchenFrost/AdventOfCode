@@ -34,7 +34,7 @@ def main(args: List[str]) -> None:
     logging_cfg(filename="logging.ini", loglevel=options.loglevel)
     LOGGER.info("Called with '%s'", options)
 
-    config = dotenv_values("../.env", verbose=True)
+    config = dotenv_values(Path(__file__).parent.parent / ".env", verbose=True)
     app = AoC2021Day12(
         config["NEO4J_SERVERURL"], config["NEO4J_USER"], config["NEO4J_PASSWORD"]
     )

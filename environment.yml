@@ -1,5 +1,5 @@
 # To run: conda env create -f environment.yml
-name: aoc-martin
+name: aoc-martinroebke
 channels:
   - defaults
   - conda-forge
@@ -8,3 +8,4 @@ dependencies:
   - neo4j-python-driver
   - numpy
   - python-dotenv
+  - setuptools

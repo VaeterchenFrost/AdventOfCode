@@ -21,6 +21,4 @@ $inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
 load_aoc_input $year $day $inputfile | Out-Null
 
 $ret = python.exe "$PSScriptRoot/Day 12 Passage Pathing.py"
-$ret | Write-Debug
-$results = Select-String -Pattern 'milliseconds (\d+) ' -AllMatches -InputObject $ret
-$results.Matches | ForEach-Object { $_.Groups[1].Value } | Write-Warning
+$ret | Write-Warning

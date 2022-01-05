@@ -28,7 +28,11 @@ def main(args: List[str]) -> None:
     parser = get_parser(
         "Solving AdventOfCode 2021 Day 12: Passage Pathing https://adventofcode.com/2021/day/12"
     )
-    # get cmd-arguments
+    parser.add_argument(
+        "--infile",
+        help="file containing the input for the puzzle.",
+        default=Path(__file__).parent / "input12",
+    )
     options = parser.parse_args(args)
 
     logging_cfg(filename="logging.ini", loglevel=options.loglevel)
@@ -38,9 +42,7 @@ def main(args: List[str]) -> None:
     app = AoC2021Day12(
         config["NEO4J_SERVERURL"], config["NEO4J_USER"], config["NEO4J_PASSWORD"]
     )
-    # app.clear_database()
-    inputfile = Path(__file__).parent / "input12"
-    with open(inputfile, "r") as file:
+    with open(options.infile, "r") as file:
         app.create_prepare_graph(edges=[s.strip() for s in file.readlines()])
     day12of2021(**app.get_adjacency_matrix())
     del app
@@ -54,7 +56,6 @@ def pathing(wam, visited, posi, end, twice=True):
     end: int terminating node
     twice: bool if possible to visit twice
     """
-    # print("p ", visited, posi)
     ways = np.copy(wam[::, posi])
     ends = ways[end]
     ways[end] = 0
@@ -202,33 +203,35 @@ class AoC2021Day12:
 
     def create_prepare_graph(self, edges: List[str]):
         with self.driver.session() as session:
-            LOGGER.info(
-                f"Clearing database: {session.write_transaction(self._clear_database)}"
-            )
-            LOGGER.info(
-                f"Adding edges: {session.write_transaction(self._create_graph, edges)}"
-            )
-            LOGGER.info(
-                f"Adding labels: {session.write_transaction(self._add_cavelabels)}"
-            )
-            LOGGER.info(
-                f"Adding edges connected over big: {session.write_transaction(self._add_connected_over_big)}"
-            )
-            LOGGER.info(
-                f"Adding loop over big: {session.write_transaction(self._add_loop_over_big)}"
-            )
-            LOGGER.info(
-                f"Removing big caves: {session.write_transaction(self._clear_database, ['Big'])}"
-            )
-            LOGGER.info(
-                f"Replacing leafs with loops: {session.write_transaction(self._add_loop_over_leaf)}"
-            )
+            queryresult = session.write_transaction(self._clear_database)
+            LOGGER.info("Clearing database: %s", queryresult)
+
+            queryresult = session.write_transaction(self._add_constraint)
+            LOGGER.info("Adding constraint: %s", queryresult)
+
+            queryresult = session.write_transaction(self._create_graph, edges)
+            LOGGER.info("Adding edges: %s", queryresult)
+
+            queryresult = session.write_transaction(self._add_cavelabels)
+            LOGGER.info("Adding labels: %s", queryresult)
+
+            queryresult = session.write_transaction(self._add_connected_over_big)
+            LOGGER.info("Adding edges connected over big: %s", queryresult)
+
+            queryresult = session.write_transaction(self._add_loop_over_big)
+            LOGGER.info("Adding loop over big: %s", queryresult)
+
+            queryresult = session.write_transaction(self._clear_database, ["Big"])
+            LOGGER.info("Removing big caves: %s", queryresult)
+
+            queryresult = session.write_transaction(self._add_loop_over_leaf)
+            LOGGER.info("Replacing leafs with loops: %s", queryresult)
 
 
 def init():
     """Initialization that is executed at the time of the module import."""
     if __name__ == "__main__":
-        sys.exit(main(sys.argv[1:]))  # call main function
+        sys.exit(main(sys.argv[1:]))
 
 
 init()

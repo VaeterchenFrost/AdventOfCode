@@ -24,28 +24,6 @@
 ## 2020
   * [Day 20 Jurassic Jigsaw](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2020/Day%2020%20Jurassic%20Jigsaw.ps1)
 
-## 2021
-  * [Day 1 Sonar Sweep](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%201%20Sonar%20Sweep.ps1)
-  * [Day 2 Dive](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%202%20Dive.ps1)
-  * [Day 3 Binary Diagnostic](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%203%20Binary%20Diagnostic.ps1)
-  * [Day 4 Giant Squid](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%204%20Giant%20Squid.ps1)
-  * [Day 5 Hydro Venture](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%205%20Hydro%20Venture.ps1)
-  * [Day 6 Lanternfish](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%206%20Lanternfish.ps1)
-  * [Day 7 The Treachery Of Whales](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%207%20The%20Treachery%20of%20Whales.ps1)
-  * [Day 8 Seven Segment Search](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%208%20Seven%20Segment%20Search.ps1)
-  * [Day 9 Smoke Basin](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%209%20Smoke%20Basin.ps1)
-  * [Day 10 Syntax Scoring](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2010%20Syntax%20Scoring.ps1)
-  * [Day 11 Dumbo Octopus](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2011%20Dumbo%20Octopus.ps1)
-  * [Day 12 Passage Pathing](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2012%20Passage%20Pathing.ps1)
-  * [Day 12 Passage Pathing](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2012%20Passage%20Pathing.py)
-  * [Day 13 Transparent Origami](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2013%20Transparent%20Origami.ps1)
-  * [Day 14 Extended Polymerization](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2014%20Extended%20Polymerization.ps1)
-  * [Day 15 Chiton](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2015%20Chiton.ps1)
-  * [Day 16 Packet Decoder](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2016%20Packet%20Decoder.ps1)
-  * [Day 18 Snailfish](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2018%20Snailfish.ps1)
-  * [Day 20 Trench Map](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2020%20Trench%20Map.ps1)
-  * [Day 25 Sea Cucumber](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2021/Day%2025%20Sea%20Cucumber.ps1)
-
 ## [Neo4Jexample](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/neo4jexample.py)
 
 ## [Setup](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/setup.py)

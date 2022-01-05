@@ -105,7 +105,7 @@ class AoC2021Day12:
         )
 
     @staticmethod
-    def _clear_database(tx, labelfilter: List[str] = None):
+    def _clear_database(tx, labelfilter: List[str] = None) -> bool:
         labels = [""]
         if labelfilter:
             labels += labelfilter
@@ -114,7 +114,7 @@ class AoC2021Day12:
         return True
 
     @staticmethod
-    def _add_constraint(tx):
+    def _add_constraint(tx) -> bool:
         query = r"""CREATE CONSTRAINT cave_name_key IF NOT EXISTS 
         FOR (n:Cave) 
         REQUIRE n.name IS NODE KEY;"""
@@ -122,7 +122,7 @@ class AoC2021Day12:
         return True
 
     @staticmethod
-    def _add_cavelabels(tx):
+    def _add_cavelabels(tx) -> bool:
         query = r"""MATCH (c:Cave)
         WITH c, CASE c.name = toLower(c.name)
         WHEN true THEN ["Small"] ELSE ["Big"] END AS cave_type
@@ -133,7 +133,7 @@ class AoC2021Day12:
         return True
 
     @staticmethod
-    def _add_connected_over_big(tx):
+    def _add_connected_over_big(tx) -> bool:
         query = r"""MATCH (s1:Small)-[:CONNECTED_TO]-(big:Big)-[:CONNECTED_TO]-(s2:Small)
         WHERE id(s1) < id(s2)
         MERGE (s1)-[:CONNECTED_TO {via: big.name}]->(s2);"""
@@ -141,7 +141,7 @@ class AoC2021Day12:
         return True
 
     @staticmethod
-    def _add_loop_over_big(tx):
+    def _add_loop_over_big(tx) -> bool:
         query = r"""MATCH (s:Small)-[:CONNECTED_TO]-(big:Big)
         WHERE NOT s.name IN ["start", "end"]
         MERGE (s)-[:LOOP {via: big.name}]->(s);"""
@@ -149,7 +149,7 @@ class AoC2021Day12:
         return True
 
     @staticmethod
-    def _add_loop_over_leaf(tx):
+    def _add_loop_over_leaf(tx) -> bool:
         query = r"""MATCH (s:Small)-[:CONNECTED_TO]-(leaf:Small)
         WHERE apoc.node.degree(leaf, "CONNECTED_TO") = 1
         MERGE (s)-[:LOOP {via: leaf.name}]->(s)
@@ -158,7 +158,7 @@ class AoC2021Day12:
         return True
 
     @staticmethod
-    def _create_graph(tx, edges: List[str]):
+    def _create_graph(tx, edges: List[str]) -> bool:
         delim = " "
         query = (
             f"WITH split('{delim.join(edges)}','{delim}') AS lines"
@@ -173,7 +173,7 @@ class AoC2021Day12:
         return True
 
     @staticmethod
-    def _read_adjacency_matrix(tx):
+    def _read_adjacency_matrix(tx) -> Dict:
         query = r"""
             MATCH (n)
             WITH collect(n) AS Nodes
@@ -196,12 +196,12 @@ class AoC2021Day12:
             (result,) = session.read_transaction(self._read_adjacency_matrix)
             return result
 
-    def clear_database(self):
+    def clear_database(self) -> None:
         with self.driver.session() as session:
             # Write transactions allow the driver to handle retries and transient errors
             session.write_transaction(self._clear_database)
 
-    def create_prepare_graph(self, edges: List[str]):
+    def create_prepare_graph(self, edges: List[str]) -> None:
         with self.driver.session() as session:
             queryresult = session.write_transaction(self._clear_database)
             LOGGER.info("Clearing database: %s", queryresult)

@@ -1,12 +1,12 @@
 import logging
-from pathlib import Path
 import sys
+import time
+from pathlib import Path
 from typing import Any, Dict, List
+
+import numpy as np
 from dotenv import dotenv_values
 from neo4j import GraphDatabase
-import numpy as np
-import time
-
 from utilities.utilities import get_parser, logging_cfg
 
 LOGGER = logging.getLogger("day122021.py")

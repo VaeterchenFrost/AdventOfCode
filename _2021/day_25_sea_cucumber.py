@@ -1,7 +1,7 @@
 import logging
 import sys
 from pathlib import Path
-from typing import List
+from typing import Dict, List
 
 from dotenv import dotenv_values
 from utilities.utilities import get_parser, logging_cfg
@@ -49,14 +49,40 @@ def main(args: List[str]) -> None:
 
 class AoC2021Day25(AoC2021Day12):
     @staticmethod
-    def _add_constraint(tx):
+    def _add_constraint(tx) -> bool:
         query = r"""CREATE CONSTRAINT grid_pos_key IF NOT EXISTS
         FOR (n:Posi)
         REQUIRE n.pos IS NODE KEY;"""
         tx.run(query)
         return True
 
-    def create_prepare_graph(self, lines: List[str]):
+    @staticmethod
+    def _create_graph(tx, lines: List[str]) -> Dict:
+        delim = " "
+        query = (
+            f"WITH split('{delim.join(lines)}','{delim}') AS lines"
+            r"""
+            WITH lines, range(0, size(lines)-1) AS linerange, range(0, size(lines[0])-1) AS columnrange
+            UNWIND linerange AS line
+            UNWIND columnrange AS column
+            MERGE (s:Posi {
+                pos:(column + ((line+1) % size(lines))*size(lines[0]))})
+            MERGE (p:Posi {
+                pos:(column + line*size(lines[0]))})
+            MERGE (e:Posi {
+                pos:((column+1) % size(lines[0]) + line*size(lines[0]))})
+            MERGE (s)<-[:MOVESOUTH]-(p)-[:MOVEEAST]->(e)
+            WITH split(lines[line], '') AS cucumbers, line, lines
+            UNWIND range(0, size(cucumbers)-1) AS c
+            MATCH (p:Posi{
+                pos:c + line*size(lines[0])})
+            SET p.floor = cucumbers[c]
+            RETURN max(size(lines)) as rows, max(size(lines[0])) as columns"""
+        )
+        result = tx.run(query)
+        return [{"rows": row["rows"], "columns": row["columns"],} for row in result]
+
+    def create_prepare_graph(self, lines: List[str]) -> None:
         with self.driver.session() as session:
             queryresult = session.write_transaction(self._clear_database)
             LOGGER.info("Clearing database: %s", queryresult)

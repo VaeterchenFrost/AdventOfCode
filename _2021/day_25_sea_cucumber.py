@@ -43,7 +43,7 @@ def main(args: List[str]) -> None:
     )
 
     with open(options.infile, "r") as file:
-        app.create_prepare_graph(lines=[s.strip() for s in file.readlines()])
+        print(app.create_and_iterate_graph(lines=[s.strip() for s in file.readlines()]))
     del app
 
 
@@ -82,13 +82,44 @@ class AoC2021Day25(AoC2021Day12):
         result = tx.run(query)
         return [{"rows": row["rows"], "columns": row["columns"],} for row in result]
 
-    def create_prepare_graph(self, lines: List[str]) -> None:
+    @staticmethod
+    def _fixpoint_steps(tx) -> int:
+        query = r"""
+        CALL apoc.periodic.commit(
+        '
+            MATCH (p{
+                floor:">"})-[:MOVEEAST]->(e{
+                floor:"."}) SET p.floor=".", e.floor=">"
+            RETURN COUNT(p) AS c
+            LIMIT 1
+            UNION
+            MATCH (p{
+                floor:"v"})-[:MOVESOUTH]->(s{
+                floor:"."}) SET p.floor=".", s.floor="v"
+            RETURN count(p) AS c
+            LIMIT 1') yield executions
+        RETURN executions AS steps"""
+        result = tx.run(query)
+        return [row["steps"] + 1 for row in result]
+
+    def create_and_iterate_graph(self, lines: List[str]) -> int:
         with self.driver.session() as session:
             queryresult = session.write_transaction(self._clear_database)
             LOGGER.info("Clearing database: %s", queryresult)
 
             queryresult = session.write_transaction(self._add_constraint)
             LOGGER.info("Adding constraint: %s", queryresult)
+
+            (queryresult,) = session.write_transaction(self._create_graph, lines)
+            LOGGER.info(
+                "Adding nodes and relationships to grid: %d rows, %d columns",
+                queryresult["rows"],
+                queryresult["columns"],
+            )
+
+            (queryresult,) = session.write_transaction(self._fixpoint_steps)
+            LOGGER.info("Resulting fixed point and answer after %d steps", queryresult)
+            return queryresult
 
 
 def init():

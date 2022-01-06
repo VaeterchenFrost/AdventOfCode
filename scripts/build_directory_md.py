@@ -42,7 +42,9 @@ EXCLUDED_FILENAMES = ("__init__.py",)
 def good_file_paths(top_dir: str = ".") -> Iterator[str]:
     """Return relative path to files with extension in AFFECTED_EXT."""
     for dir_path, dir_names, filenames in os.walk(top_dir):
-        dir_names[:] = [d for d in dir_names if d != "scripts" and d[0] not in "._"]
+        dir_names[:] = [
+            d for d in dir_names if d not in ["scripts", "build"] and d[0] != "."
+        ]
         for filename in filenames:
             if filename in EXCLUDED_FILENAMES:
                 continue
@@ -89,7 +91,7 @@ def print_directory_md(top_dir: str = ".") -> None:
         url = "/".join(
             (URL_BASE, *[quote(part) for part in (filepath, filename) if part])
         )
-        filename = os.path.splitext(filename.replace("_", " ").title())[0]
+        filename = filename.replace("_", " ").title()
         print(f"{md_prefix(indent)} [{filename}]({url})")
 
 

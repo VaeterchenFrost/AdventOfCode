@@ -20,5 +20,5 @@ $year, $day = 2021, 12
 $inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
 load_aoc_input $year $day $inputfile | Out-Null
 
-$ret = python.exe "$PSScriptRoot/Day 12 Passage Pathing.py"
+$ret = python.exe "$PSScriptRoot/day_12_passage_pathing.py"
 $ret | Write-Warning

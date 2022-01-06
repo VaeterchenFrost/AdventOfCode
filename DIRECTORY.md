@@ -3,6 +3,7 @@
   * [Day 1 Not Quite Lisp.Ps1](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2015/Day%201%20Not%20Quite%20Lisp.ps1)
   * [Day 2 I Was Told There Would Be No Math.Ps1](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2015/Day%202%20I%20Was%20Told%20There%20Would%20Be%20No%20Math.ps1)
   * [Day 3 Perfectly Spherical Houses In A Vacuum.Ps1](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2015/Day%203%20Perfectly%20Spherical%20Houses%20in%20a%20Vacuum.ps1)
+  * [Day 4 The Ideal Stocking Stuffer.Ps1](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2015/Day%204%20The%20Ideal%20Stocking%20Stuffer.ps1)
 
 ## 2016
   * [Day 1 No Time For A Taxicab.Ps1](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2016/Day%201%20No%20Time%20for%20a%20Taxicab.ps1)

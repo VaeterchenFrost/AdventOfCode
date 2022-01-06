@@ -41,3 +41,7 @@ else {
   Write-Host $output
   Write-Warning ([regex]::match(($output -split ',')[1], '\d+').Value)
 }
+
+Write-Output "With Cypher:"
+$ret = python.exe "$PSScriptRoot/day_25_sea_cucumber.py" # --in="_2021/input25_example"
+$ret | Write-Warning

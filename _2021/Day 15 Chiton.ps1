@@ -15,7 +15,7 @@ Using the full map, what is the lowest total risk of any path from the top left 
 $year, $day = 2021, 15
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 load_aoc_input $year $day $inputfile | Out-Null
 
 $output = (wolframscript.exe -c ('

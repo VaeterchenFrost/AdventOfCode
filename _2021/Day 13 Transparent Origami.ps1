@@ -9,7 +9,7 @@ How many dots are visible after completing just the first fold instruction on yo
 $year, $day = 2021, 13
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $iterator = $lines.GetEnumerator()

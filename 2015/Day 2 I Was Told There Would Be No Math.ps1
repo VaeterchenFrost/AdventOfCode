@@ -15,7 +15,7 @@ All numbers in the elves' list are in feet. How many total square feet of wrappi
 $year, $day = 2015, 2
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $wrapping_paper = $lines | ForEach-Object { $ar = $_.Split('x') | ForEach-Object { [int]$_ } | Sort-Object; 3 * $ar[0] * $ar[1] + 2 * $ar[0] * $ar[2] + 2 * $ar[1] * $ar[2] } | Measure-Object -Sum

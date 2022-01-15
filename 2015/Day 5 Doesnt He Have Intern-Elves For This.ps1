@@ -11,7 +11,7 @@ How many strings are nice? #>
 $year, $day = 2015, 5
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 $vowels = 'aeiou'.ToCharArray()
 

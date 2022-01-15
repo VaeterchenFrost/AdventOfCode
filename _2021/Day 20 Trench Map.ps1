@@ -15,7 +15,7 @@ How many pixels are lit in the resulting image?#>
 $year, $day = 2021, 20
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 load_aoc_input $year $day $inputfile | Out-Null
 
 <# --- Part Two --- 

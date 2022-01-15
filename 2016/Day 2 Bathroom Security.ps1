@@ -27,7 +27,7 @@ You still start at "5" and stop when you're at an edge #>
 $year, $day = 2016, 2
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $x = $y = 0

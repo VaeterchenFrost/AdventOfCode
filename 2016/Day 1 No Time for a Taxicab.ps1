@@ -16,7 +16,7 @@ $year, $day = 2016, 1
 
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $directions = $lines -split ', '
@@ -26,7 +26,7 @@ $face = 0
 $x = $y = 0
 
 foreach ($direction in $directions) {
-    $face = ($face - 1 + 2 * $direction.StartsWith("R") + 4) % 4
+    $face = ($face - 1 + 2 * $direction.StartsWith('R') + 4) % 4
     
     switch ($face) {
         $North { $y += $direction.Substring(1) ; break }
@@ -48,7 +48,7 @@ $face = 0
 $x = $y = 0
 $visited = New-Object 'System.Collections.Generic.HashSet[Tuple[int,int]]'
 :travel foreach ($direction in $directions) {
-    $face = ($face - 1 + 2 * $direction.StartsWith("R") + 4) % 4
+    $face = ($face - 1 + 2 * $direction.StartsWith('R') + 4) % 4
     $distance = $direction.Substring(1)
     switch ($face) {
         $North { (1..$distance).ForEach({ if (-not $visited.Add([Tuple]::Create($x, ++$y))) { break travel } }) }

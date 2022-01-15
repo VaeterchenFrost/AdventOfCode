@@ -33,7 +33,7 @@ b    .  b    .  .    c  b    c  b    c
 $year, $day = 2021, 8
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 Write-Warning $lines.ForEach({ $_.Split('|')[1].Split(' ').Where({ (2, 4, 3, 7) -contains $_.length }) }).Count

@@ -16,7 +16,7 @@ Given the list of blocked IPs you retrieved from the firewall (your puzzle input
 $year, $day = 2016, 20
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $list = $lines.ForEach({

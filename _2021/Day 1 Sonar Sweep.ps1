@@ -18,7 +18,7 @@ There is no measurement before the first measurement. In the example above, the 
 $year, $day = 2021, 1
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $measurements = $lines.Split() | ForEach-Object { [int]$_ }

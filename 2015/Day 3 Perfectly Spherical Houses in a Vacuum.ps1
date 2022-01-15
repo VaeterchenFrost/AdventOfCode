@@ -11,7 +11,7 @@ How many houses receive at least one present?
 $year, $day = 2015, 3
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 $characters = $lines.ToCharArray()
 

@@ -12,7 +12,7 @@ The system's full passphrase list is available as your puzzle input. How many pa
 $year, $day = 2017, 4
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 Write-Warning $lines.Where({

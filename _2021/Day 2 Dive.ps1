@@ -20,7 +20,7 @@ After following these instructions, you would have a horizontal position of 15 a
 $year, $day = 2021, 2
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $horizontal = $depth = 0

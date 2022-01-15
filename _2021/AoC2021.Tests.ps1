@@ -93,3 +93,30 @@ Describe 'Day 4 Giant Squid' {
         }
     }
 }
+
+Describe 'Day 5 Hydro Venture' {
+    Describe 'Example part1=<part1>' -ForEach @(
+        @{ Part1 = $true; Expected = '5' }
+        @{ Part1 = $false; Expected = '12' }
+    ) {
+        BeforeEach { Remove-Item "$PSScriptRoot/input5" -ErrorAction 'SilentlyContinue' }
+    
+        It 'Given part1 <part1>, it solves it correctly with example input' {
+            $example = ('0,9 -> 5,9',
+                '8,0 -> 0,8',
+                '9,4 -> 3,4',
+                '2,2 -> 2,1',
+                '7,0 -> 7,4',
+                '6,4 -> 2,0',
+                '0,9 -> 2,9',
+                '3,4 -> 1,4',
+                '0,0 -> 8,8',
+                '5,5 -> 8,2')  
+            Out-File -InputObject $example "$PSScriptRoot/input5" 
+            Mock Write-Warning { Write-Output $message }
+            $result = & "$PSScriptRoot/Day 5 Hydro Venture.ps1" 
+            $result.Count | Should -Be 1
+            Should -Invoke Write-Warning -Exactly 1 -Scope It -ParameterFilter { $message -eq $expected }
+        }
+    }
+}

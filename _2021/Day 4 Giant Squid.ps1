@@ -24,35 +24,35 @@ $lines = load_aoc_input $year $day $inputfile
 
 $boardsize = 5
 $boardcount = ($lines.Count - 1) / ($boardsize + 1)
-$draws = $lines[0] -split ","
+$draws = $lines[0] -split ','
 
 $boards = @{}
 foreach ($board in (1..$boardcount)) {
-    $boards[$board] = (1..$boardsize).ForEach({ [regex]::Split($lines[($board - 1) * (1 + $boardsize) + $_ + 1].Trim(), "\s+").ForEach({ [int]$_ }) })
+    $boards[$board] = (1..$boardsize).ForEach({ [regex]::Split($lines[($board - 1) * (1 + $boardsize) + $_ + 1].Trim(), '\s+').ForEach({ [int]$_ }) })
 }
 # $boards.Values | % { $_.count -eq 25 } | Test-All
 $rows = (1..$boardsize).ForEach({ --$_ * $boardsize })
 
-:calculation ($boardsize..$draws.Count).ForEach({
-        # go through all rows and columns to check if one is contained in cúrrent draw
-        $draw = $draws[0..($_ - 1)]
-        # $boards_won = @()
-        foreach ($key in $boards.Keys) {
-            foreach ($line in (1..$boardsize)) {
-                if (
+:calculation foreach ($maxdraw in $boardsize..$draws.Count) {
+    # go through all rows and columns to check if one is contained in cúrrent draw
+    $draw = $draws[0..($maxdraw - 1)]
+    $boards_won = @()
+    foreach ($key in $boards.Keys) {
+        foreach ($line in (1..$boardsize)) {
+            if (
 ($boards[$key][($boardsize * ($line - 1))..($boardsize * $line - 1)] | ForEach-Object { $draw -contains $_ } | Test-All) -or 
-($boards[$key][($rows | % { $_ + $line - 1 })] | ForEach-Object { $draw -contains $_ } | Test-All)
-                ) {
-                    # $boards_won += ($key)
-                    # if (($boards.Count - $boards_won.Count) -eq 0) {
-                        # handle found board: sum of all unmarked numbers on that board; Then, multiply that sum by the number that was just called when the board won
-                        $sumunmarked = $boards[$key].Where({ $draw -notcontains $_ }) | reduce { $a + $b }
-                        Write-Debug "board $key has unmarked $sumunmarked after draw $($draw[-1])"
-                        Write-Warning ($sumunmarked * $draw[-1])
-                        break calculation
-                    # }
+($boards[$key][($rows | ForEach-Object { $_ + $line - 1 })] | ForEach-Object { $draw -contains $_ } | Test-All)
+            ) {
+                $boards_won += ($key)
+                if (($boards.Count - $boards_won.Count) -eq 0 -or $part1) {
+                    # handle found board: sum of all unmarked numbers on that board; Then, multiply that sum by the number that was just called when the board won
+                    $sumunmarked = $boards[$key].Where({ $draw -notcontains $_ }) | reduce { $a + $b }
+                    Write-Debug "board $key has unmarked $sumunmarked after draw $($draw[-1])"
+                    Write-Warning ($sumunmarked * $draw[-1])
+                    break calculation
                 }
             }
         }
-        # $boards_won.ForEach({ $boards.Remove($_) })
-    })
+    }
+    $boards_won.ForEach({ $boards.Remove($_) })
+}

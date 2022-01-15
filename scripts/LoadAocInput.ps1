@@ -4,7 +4,7 @@ function load_aoc_input($year, $day, $inputfile) {
     if (-not ($text = Get-Content $inputfile -ErrorAction SilentlyContinue)) {
         Write-Debug "load_aoc_input for $year/$day to '$inputfile'"
         load_dotenv $DOTENVFILE
-        $request = Invoke-WebRequest -Uri "https://adventofcode.com/${year}/day/${day}/input" -Headers @{Cookie = "session=$env:AOC_SESSION"; Accept = 'text/plain' }
+        $request = Invoke-WebRequest -Uri "https://adventofcode.com/$year/day/$day/input" -Headers @{Cookie = "session=$env:AOC_SESSION"; Accept = 'text/plain' }
         unload_dotenv $DOTENVFILE
         Write-Debug "Got $($request.Headers.'Content-Length') Bytes"  
         $text = $request.Content.Trim()

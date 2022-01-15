@@ -22,7 +22,7 @@ What is the sector ID of the room where North Pole objects are stored?#>
 $year, $day = 2016, 4
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $sum = 0

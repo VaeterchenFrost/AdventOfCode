@@ -3,7 +3,7 @@
 $year, $day = 2021, 16
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $string = load_aoc_input $year $day $inputfile
 
 # The first step of decoding the message is to convert the hexadecimal representation into binary. 

@@ -26,7 +26,7 @@ Use the binary numbers in your diagnostic report to calculate the gamma rate and
 $year, $day = 2021, 3
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $instructions = $lines

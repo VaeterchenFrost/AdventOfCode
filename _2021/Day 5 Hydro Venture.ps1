@@ -11,7 +11,7 @@ Consider only horizontal and vertical lines. At how many points do at least two 
 $year, $day = 2021, 5
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $numbers = $lines.foreach(

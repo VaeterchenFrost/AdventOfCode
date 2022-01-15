@@ -17,7 +17,7 @@ How many IPs in your puzzle input support TLS?
 $year, $day = 2016, 7
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $text = load_aoc_input $year $day $inputfile
 
 $supportTLS = foreach ($line in $text.Split())

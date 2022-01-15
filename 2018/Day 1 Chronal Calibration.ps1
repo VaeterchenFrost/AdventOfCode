@@ -6,7 +6,7 @@ Starting with a frequency of zero, what is the resulting frequency after all of 
 $year, $day = 2018, 1
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $seen = New-Object 'System.Collections.Generic.HashSet[int]'

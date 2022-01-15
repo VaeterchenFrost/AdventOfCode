@@ -16,7 +16,7 @@ What do you get if you take the quantity of the most common element and subtract
 $year, $day = 2021, 14
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 load_aoc_input $year $day $inputfile | Out-Null
 
 $result = wolframscript.exe -c ('

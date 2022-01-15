@@ -13,7 +13,7 @@ Import-Module functional -DisableNameChecking
 $year, $day = 2017, 2
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 Write-Warning ($lines | ForEach-Object { $d = ($_ -split '\s+') | ForEach-Object { [int]$_ }; # | Sort-Object;

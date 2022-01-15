@@ -17,7 +17,7 @@ How many paths through this cave system are there that visit small caves at most
 $year, $day = 2021, 12
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 load_aoc_input $year $day $inputfile | Out-Null
 
 $ret = python.exe "$PSScriptRoot/day_12_passage_pathing.py"

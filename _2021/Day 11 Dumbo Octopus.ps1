@@ -16,7 +16,7 @@ Given the starting energy levels of the dumbo octopuses in your cavern, simulate
 $year, $day = 2021, 11
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $columns = 1..10 # expected

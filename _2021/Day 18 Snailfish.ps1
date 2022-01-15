@@ -22,7 +22,7 @@ Add up all of the snailfish numbers from the homework assignment in the order th
 $year, $day = 2021, 18
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 load_aoc_input $year $day $inputfile | Out-Null
 
 $output = wolframscript.exe -c ('

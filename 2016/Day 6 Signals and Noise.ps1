@@ -9,7 +9,7 @@ choose the least common letter to reconstruct the original message.#>
 $year, $day = 2016, 6
 
 . "$PSScriptRoot/../scripts/LoadAocInput.ps1"
-$inputfile = $PSScriptRoot + "/input${day}" -replace '\\', '/'
+$inputfile = $PSScriptRoot + "/input$day" -replace '\\', '/'
 $lines = load_aoc_input $year $day $inputfile
 
 $characters = (1..$lines[0].Length) | ForEach-Object { @{} }

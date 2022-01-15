@@ -28,6 +28,7 @@
   * [Day 20 Jurassic Jigsaw.Ps1](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/2020/Day%2020%20Jurassic%20Jigsaw.ps1)
 
 ##  2021
+  * [Aoc2021.Tests.Ps1](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/_2021/AoC2021.Tests.ps1)
   * [Day 1 Sonar Sweep.Ps1](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/_2021/Day%201%20Sonar%20Sweep.ps1)
   * [Day 2 Dive.Ps1](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/_2021/Day%202%20Dive.ps1)
   * [Day 3 Binary Diagnostic.Ps1](https://github.com/VaeterchenFrost/AdventOfCode/blob/main/_2021/Day%203%20Binary%20Diagnostic.ps1)

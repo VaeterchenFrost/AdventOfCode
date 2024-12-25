@@ -52,7 +52,7 @@ classifiers = [
     'Topic :: Scientific/Engineering :: Visualization',
     'Topic :: Multimedia :: Graphics :: Presentation']
 
-tests_require = ['hypothesis', 'pytest', 'pytest-mock']
+# tests_require = ['hypothesis', 'pytest', 'pytest-mock']
 
 setup(name="aocmartinroebke",
       version=version,
@@ -63,7 +63,7 @@ setup(name="aocmartinroebke",
       author="Martin Röbke",
       author_email="martin.roebke@web.de",
       license='GPLv3',
-      packages=['utilities', "2021"],
+      packages=['utilities', "_2021"],
       platforms='any',
       classifiers=classifiers,
       keywords='graph visualization neo4j cypher powershell')

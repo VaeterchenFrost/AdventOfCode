@@ -7,6 +7,7 @@ from typing import Any, Dict, List
 import numpy as np
 from dotenv import dotenv_values
 from neo4j import GraphDatabase
+
 from utilities.utilities import get_parser, logging_cfg
 
 LOGGER = logging.getLogger("day122021.py")
@@ -180,7 +181,7 @@ class AoC2021Day12:
             WITH 
             [n IN Nodes |
             [m IN Nodes |
-                size((n)-[:LOOP|CONNECTED_TO]-(m))
+                COUNT{((n)-[:LOOP|CONNECTED_TO]-(m))}
             ]
             ] AS AdjacencyMatrix, [n in Nodes|n.name] as Nodes
             RETURN Nodes,AdjacencyMatrix;
@@ -188,7 +189,11 @@ class AoC2021Day12:
         result = tx.run(query)
 
         return [
-            {"nodes": row["Nodes"], "matrix": row["AdjacencyMatrix"],} for row in result
+            {
+                "nodes": row["Nodes"],
+                "matrix": row["AdjacencyMatrix"],
+            }
+            for row in result
         ]
 
     def get_adjacency_matrix(self) -> Dict[str, Any]:

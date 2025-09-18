@@ -120,3 +120,40 @@ Describe 'Day 5 Hydro Venture' {
         }
     }
 }
+
+Describe 'Day 16 Packet Decoder' {
+    BeforeEach { Remove-Item "$PSScriptRoot/input16" -ErrorAction 'SilentlyContinue' }
+
+    It 'Given example input, it solves Part 1 correctly for literal value' {
+        Out-File -InputObject 'D2FE28' "$PSScriptRoot/input16"
+        Mock Write-Warning { Write-Output $message }
+        $result = & "$PSScriptRoot/Day 16 Packet Decoder.ps1" 
+        $result.Count | Should -Be 2
+        Should -Invoke Write-Warning -Exactly 1 -Scope It -ParameterFilter { $message -eq 'Part 1 - Version sum: 6' }
+        Should -Invoke Write-Warning -Exactly 1 -Scope It -ParameterFilter { $message -eq 'Part 2 - Evaluated value: 2021' }
+    }
+
+    It 'Given example input, it solves Part 1 correctly for operator packet' {
+        Out-File -InputObject '8A004A801A8002F478' "$PSScriptRoot/input16"
+        Mock Write-Warning { Write-Output $message }
+        $result = & "$PSScriptRoot/Day 16 Packet Decoder.ps1" 
+        $result.Count | Should -Be 2
+        Should -Invoke Write-Warning -Exactly 1 -Scope It -ParameterFilter { $message -eq 'Part 1 - Version sum: 16' }
+    }
+
+    It 'Given example input, it solves Part 2 correctly for sum operation' {
+        Out-File -InputObject 'C200B40A82' "$PSScriptRoot/input16"
+        Mock Write-Warning { Write-Output $message }
+        $result = & "$PSScriptRoot/Day 16 Packet Decoder.ps1" 
+        $result.Count | Should -Be 2
+        Should -Invoke Write-Warning -Exactly 1 -Scope It -ParameterFilter { $message -eq 'Part 2 - Evaluated value: 3' }
+    }
+
+    It 'Given example input, it solves Part 2 correctly for product operation' {
+        Out-File -InputObject '04005AC33890' "$PSScriptRoot/input16"
+        Mock Write-Warning { Write-Output $message }
+        $result = & "$PSScriptRoot/Day 16 Packet Decoder.ps1" 
+        $result.Count | Should -Be 2
+        Should -Invoke Write-Warning -Exactly 1 -Scope It -ParameterFilter { $message -eq 'Part 2 - Evaluated value: 54' }
+    }
+}

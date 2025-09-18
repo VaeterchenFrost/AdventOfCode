@@ -1,0 +1,84 @@
+{
+	"name": "AdventOfCode Development Environment",
+	"image": "mcr.microsoft.com/devcontainers/universal:2-linux",
+	
+	"features": {
+		"ghcr.io/devcontainers/features/powershell:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/python:1": {
+			"version": "3.9"
+		},
+		"ghcr.io/devcontainers/features/conda:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"version": "latest"
+		}
+	},
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.powershell",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-toolsai.jupyter",
+				"GitHub.copilot",
+				"GitHub.copilot-chat",
+				"ms-vscode.vscode-json",
+				"redhat.vscode-yaml",
+				"ms-vscode.vscode-markdown",
+				"davidanson.vscode-markdownlint",
+				"ms-python.autopep8",
+				"ms-python.flake8",
+				"neo4j.cypher",
+				"ms-vscode.hexdump"
+			],
+			"settings": {
+				"python.defaultInterpreterPath": "/opt/conda/bin/python",
+				"python.condaPath": "/opt/conda/bin/conda",
+				"python.terminal.activateEnvironment": true,
+				"powershell.powerShellDefaultVersion": "PowerShell (x64)",
+				"files.associations": {
+					"*.ps1": "powershell"
+				},
+				"terminal.integrated.defaultProfile.linux": "pwsh",
+				"terminal.integrated.profiles.linux": {
+					"pwsh": {
+						"path": "/usr/bin/pwsh",
+						"args": []
+					},
+					"bash": {
+						"path": "/bin/bash",
+						"args": []
+					}
+				}
+			}
+		}
+	},
+
+	"postCreateCommand": "bash .devcontainer/setup.sh",
+
+	"forwardPorts": [7474, 7687],
+	"portsAttributes": {
+		"7474": {
+			"label": "Neo4j HTTP",
+			"onAutoForward": "silent"
+		},
+		"7687": {
+			"label": "Neo4j Bolt",
+			"onAutoForward": "silent"
+		}
+	},
+
+	"containerEnv": {
+		"SHELL": "/usr/bin/pwsh"
+	},
+
+	"mounts": [
+		"source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+	],
+
+	"remoteUser": "codespace"
+}

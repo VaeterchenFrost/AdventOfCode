@@ -161,7 +161,7 @@ pip install -e .
 ## Testing and Validation
 
 - Test solutions with provided sample inputs
-- Ensure cross-platform compatibility (Windows/Linux/macOS)
+- Ensure cross-platform compatibility (Windows/Linux)
 - Validate that input loading works correctly
 - Check that solutions produce expected output format
 
@@ -187,5 +187,4 @@ pip install -e .
 
 When creating new files, avoid:
 - Modifying auto-generated `DIRECTORY.md`
-- Creating files that match `EXCLUDED_FILENAMES` pattern (`__init__.py` in build script)
 - Adding build artifacts or temporary files to version control
